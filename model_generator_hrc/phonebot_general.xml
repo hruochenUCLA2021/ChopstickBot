@@ -1,7 +1,7 @@
 <mujoco model="phonebot_general_6motor">
   <compiler angle="radian" balanceinertia="true" />
   <asset>
-    <mesh name="motor_mesh" file="/media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/reference/xm430_motor/good_conversion_stl/XL-430_new_coordinate_on_axis.STL" scale="0.001000 0.001000 0.001000" />
+    <mesh name="motor_mesh" file="meshes/XL-430_new_coordinate_on_axis.STL" scale="0.001000 0.001000 0.001000" />
     </asset>
   <worldbody>
     <body name="base_motor_link" pos="0.000000 0.000000 0.000000" quat="1.000000 0.000000 0.000000 0.000000">

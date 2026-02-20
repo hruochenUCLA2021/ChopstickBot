@@ -3,6 +3,8 @@ from __future__ import annotations
 
 import argparse
 import math
+import os
+import shutil
 import sys
 import xml.etree.ElementTree as ET
 from pathlib import Path
@@ -149,13 +151,13 @@ def _urdf_add_joint(
         ET.SubElement(j, "limit", lower="-3.14159", upper="3.14159", effort="5.0", velocity="8.0")
 
 
-def build_urdf(cfg: dict) -> ET.ElementTree:
+def build_urdf(cfg: dict, *, motor_mesh_path: Path) -> ET.ElementTree:
     require_keys(cfg, ["robot", "assets", "components", "left_leg", "trunk"], "root")
     robot = ET.Element("robot", name=str(cfg["robot"]["name"]))
 
     assets = cfg["assets"]
     comp = cfg["components"]
-    motor_stl = Path(str(assets["motor_stl"])).resolve()
+    motor_stl = motor_mesh_path
     scale = float(assets.get("motor_mesh_scale", 0.001))
 
     motor_c = comp["motor"]
@@ -343,7 +345,7 @@ def _mj_geom_box(body: ET.Element, size_xyz: tuple[float, float, float], pos_xyz
     )
 
 
-def build_mjcf(cfg: dict) -> ET.ElementTree:
+def build_mjcf(cfg: dict, *, motor_mesh_file: str) -> ET.ElementTree:
     require_keys(cfg, ["robot", "assets", "components", "left_leg", "trunk"], "root")
     model_name = str(cfg["robot"]["name"])
     mj = ET.Element("mujoco", model=model_name)
@@ -351,7 +353,7 @@ def build_mjcf(cfg: dict) -> ET.ElementTree:
 
     assets = cfg["assets"]
     comp = cfg["components"]
-    motor_stl = str(Path(str(assets["motor_stl"])).resolve())
+    motor_stl = motor_mesh_file
     scale = float(assets.get("motor_mesh_scale", 0.001))
 
     asset = ET.SubElement(mj, "asset")
@@ -595,18 +597,43 @@ def main() -> int:
         return 2
     cfg = load_config(cfg_path)
 
-    motor_stl = Path(str(cfg["assets"]["motor_stl"])).resolve()
-    if not motor_stl.exists():
-        print(f"[ERROR] motor STL not found: {motor_stl}", file=sys.stderr)
-        return 2
-
-    urdf_tree = build_urdf(cfg)
-    mjcf_tree = build_mjcf(cfg)
-
     out_cfg = cfg.get("output", {}) or {}
     out_dir = Path(args.out_dir or out_cfg.get("out_dir") or DEFAULT_OUT_DIR).resolve()
     urdf_name = str(args.urdf_name or out_cfg.get("urdf_name") or "robot.urdf")
     mjcf_name = str(args.mjcf_name or out_cfg.get("mjcf_name") or "robot.xml")
+
+    assets = cfg.get("assets", {}) or {}
+    motor_stl_cfg = Path(str(assets.get("motor_stl", "")))
+    if not motor_stl_cfg.is_absolute():
+        motor_stl_abs = (cfg_path.parent / motor_stl_cfg).resolve()
+    else:
+        motor_stl_abs = motor_stl_cfg.resolve()
+    if not motor_stl_abs.exists():
+        print(f"[ERROR] motor STL not found: {motor_stl_abs}", file=sys.stderr)
+        return 2
+
+    use_relative_paths = bool(assets.get("use_relative_paths", False))
+    copy_assets_to_output = bool(assets.get("copy_assets_to_output", use_relative_paths))
+    output_mesh_dir = str(assets.get("output_mesh_dir", "meshes"))
+
+    if use_relative_paths:
+        if copy_assets_to_output:
+            dest_dir = out_dir / output_mesh_dir
+            dest_dir.mkdir(parents=True, exist_ok=True)
+            dest_path = dest_dir / motor_stl_abs.name
+            shutil.copy2(motor_stl_abs, dest_path)
+            motor_mesh_path_for_urdf = Path(output_mesh_dir) / motor_stl_abs.name
+            motor_mesh_file_for_mjcf = str(Path(output_mesh_dir) / motor_stl_abs.name)
+        else:
+            rel = os.path.relpath(str(motor_stl_abs), str(out_dir))
+            motor_mesh_path_for_urdf = Path(rel)
+            motor_mesh_file_for_mjcf = rel
+    else:
+        motor_mesh_path_for_urdf = motor_stl_abs
+        motor_mesh_file_for_mjcf = str(motor_stl_abs)
+
+    urdf_tree = build_urdf(cfg, motor_mesh_path=motor_mesh_path_for_urdf)
+    mjcf_tree = build_mjcf(cfg, motor_mesh_file=motor_mesh_file_for_mjcf)
 
     urdf_path = out_dir / urdf_name
     mjcf_path = out_dir / mjcf_name

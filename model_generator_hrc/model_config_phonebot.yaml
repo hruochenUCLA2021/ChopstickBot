@@ -31,6 +31,10 @@ sensors:
 assets:
   motor_stl: /media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/reference/xm430_motor/good_conversion_stl/XL-430_new_coordinate_on_axis.STL
   motor_mesh_scale: 0.001
+  # Make generated URDF/MJCF portable: copy STL into output folder and reference it relatively.
+  use_relative_paths: true
+  copy_assets_to_output: true
+  output_mesh_dir: meshes
 
 components:
   motor:

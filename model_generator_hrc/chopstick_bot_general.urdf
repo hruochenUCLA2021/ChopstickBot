@@ -4,7 +4,7 @@
     <visual>
       <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
       <geometry>
-        <mesh filename="/media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/reference/xm430_motor/good_conversion_stl/XL-430_new_coordinate_on_axis.STL" scale="0.001000 0.001000 0.001000" />
+        <mesh filename="meshes/XL-430_new_coordinate_on_axis.STL" scale="0.001000 0.001000 0.001000" />
         </geometry>
       <material name="motor_mat">
         <color rgba="0.89804 0.91765 0.92941 1.0" />
@@ -26,7 +26,7 @@
     <visual>
       <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
       <geometry>
-        <mesh filename="/media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/reference/xm430_motor/good_conversion_stl/XL-430_new_coordinate_on_axis.STL" scale="0.001000 0.001000 0.001000" />
+        <mesh filename="meshes/XL-430_new_coordinate_on_axis.STL" scale="0.001000 0.001000 0.001000" />
         </geometry>
       <material name="motor_mat">
         <color rgba="0.89804 0.91765 0.92941 1.0" />
@@ -67,7 +67,7 @@
     <visual>
       <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
       <geometry>
-        <mesh filename="/media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/reference/xm430_motor/good_conversion_stl/XL-430_new_coordinate_on_axis.STL" scale="0.001000 0.001000 0.001000" />
+        <mesh filename="meshes/XL-430_new_coordinate_on_axis.STL" scale="0.001000 0.001000 0.001000" />
         </geometry>
       <material name="motor_mat">
         <color rgba="0.89804 0.91765 0.92941 1.0" />
@@ -135,7 +135,7 @@
     <visual>
       <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
       <geometry>
-        <mesh filename="/media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/reference/xm430_motor/good_conversion_stl/XL-430_new_coordinate_on_axis.STL" scale="0.001000 0.001000 0.001000" />
+        <mesh filename="meshes/XL-430_new_coordinate_on_axis.STL" scale="0.001000 0.001000 0.001000" />
         </geometry>
       <material name="motor_mat">
         <color rgba="0.89804 0.91765 0.92941 1.0" />
@@ -176,7 +176,7 @@
     <visual>
       <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
       <geometry>
-        <mesh filename="/media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/reference/xm430_motor/good_conversion_stl/XL-430_new_coordinate_on_axis.STL" scale="0.001000 0.001000 0.001000" />
+        <mesh filename="meshes/XL-430_new_coordinate_on_axis.STL" scale="0.001000 0.001000 0.001000" />
         </geometry>
       <material name="motor_mat">
         <color rgba="0.89804 0.91765 0.92941 1.0" />
