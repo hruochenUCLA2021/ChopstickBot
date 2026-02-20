@@ -120,7 +120,7 @@ left_leg:
 
     # hip_calf -> ankle_pitch
     - name: ankle_pitch
-      xyz: [0.0, -0.10, 0.0]
+      xyz: [0.0, -0.11, 0.0]
       rpy: [0.0, 0.0, 3.141592653589793]
       rotates_with_joint: true
 
