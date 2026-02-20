@@ -9,25 +9,25 @@
       <site name="imu" pos="0.000000 0.000000 0.000000" quat="0.707107 0.000000 0.000000 0.707107" />
       <inertial pos="0.000000 -0.012000 0.000000" mass="0.065000" diaginertia="0.000017973854 0.000010661354 0.000016111875" />
       <geom type="mesh" mesh="motor_mesh" rgba="0.89804 0.91765 0.92941 1.0" contype="0" conaffinity="0" group="0" />
-      <geom type="box" size="0.014250 0.023250 0.017000" pos="0.000000 -0.012000 0.000000" rgba="0.0 0.8 0.1 1.0" group="1" />
+      <geom type="box" size="0.014250 0.023250 0.017000" pos="0.000000 -0.012000 0.000000" rgba="0.0 0.8 0.1 1.0" contype="0" conaffinity="0" group="1" />
       <body name="l_hip_pitch" pos="-0.050000 0.000000 0.000000" quat="0.707107 0.000000 -0.707107 0.000000">
         <inertial pos="0.000000 -0.012000 0.000000" mass="0.065000" diaginertia="0.000017973854 0.000010661354 0.000016111875" />
         <geom type="mesh" mesh="motor_mesh" rgba="0.89804 0.91765 0.92941 1.0" contype="0" conaffinity="0" group="0" />
-        <geom type="box" size="0.014250 0.023250 0.017000" pos="0.000000 -0.012000 0.000000" rgba="0.0 0.8 0.1 1.0" group="1" />
+        <geom type="box" size="0.014250 0.023250 0.017000" pos="0.000000 -0.012000 0.000000" rgba="0.0 0.8 0.1 1.0" contype="0" conaffinity="0" group="1" />
         <body name="l_hip_pitch_out" pos="0.000000 0.000000 0.000000" quat="1.000000 0.000000 0.000000 0.000000">
           <inertial pos="0.000000 0.000000 0.000000" mass="0.001000" diaginertia="0.000000016667 0.000000016667 0.000000016667" />
           <joint name="l_hip_pitch_joint" type="hinge" axis="0.000000 0.000000 1.000000" pos="0.000000 0.000000 0.000000" range="-3.14159 3.14159" />
           <body name="l_hip_roll" pos="0.000000 0.000000 0.040000" quat="0.500000 -0.500000 -0.500000 -0.500000">
             <inertial pos="0.000000 -0.012000 0.000000" mass="0.065000" diaginertia="0.000017973854 0.000010661354 0.000016111875" />
             <geom type="mesh" mesh="motor_mesh" rgba="0.89804 0.91765 0.92941 1.0" contype="0" conaffinity="0" group="0" />
-            <geom type="box" size="0.014250 0.023250 0.017000" pos="0.000000 -0.012000 0.000000" rgba="0.0 0.8 0.1 1.0" group="1" />
+            <geom type="box" size="0.014250 0.023250 0.017000" pos="0.000000 -0.012000 0.000000" rgba="0.0 0.8 0.1 1.0" contype="0" conaffinity="0" group="1" />
             <body name="l_hip_roll_out" pos="0.000000 0.000000 0.000000" quat="1.000000 0.000000 0.000000 0.000000">
               <inertial pos="0.000000 0.000000 0.000000" mass="0.001000" diaginertia="0.000000016667 0.000000016667 0.000000016667" />
               <joint name="l_hip_roll_joint" type="hinge" axis="0.000000 0.000000 1.000000" pos="0.000000 0.000000 0.000000" range="-3.14159 3.14159" />
               <body name="l_hip_thigh" pos="0.000000 -0.060000 0.000000" quat="0.707107 0.707107 0.000000 0.000000">
                 <inertial pos="0.000000 -0.012000 0.000000" mass="0.065000" diaginertia="0.000017973854 0.000010661354 0.000016111875" />
                 <geom type="mesh" mesh="motor_mesh" rgba="0.89804 0.91765 0.92941 1.0" contype="0" conaffinity="0" group="0" />
-                <geom type="box" size="0.014250 0.023250 0.017000" pos="0.000000 -0.012000 0.000000" rgba="0.0 0.8 0.1 1.0" group="1" />
+                <geom type="box" size="0.014250 0.023250 0.017000" pos="0.000000 -0.012000 0.000000" rgba="0.0 0.8 0.1 1.0" contype="0" conaffinity="0" group="1" />
                 <body name="l_hip_thigh_out" pos="0.000000 0.000000 0.000000" quat="1.000000 0.000000 0.000000 0.000000">
                   <inertial pos="0.000000 0.000000 0.000000" mass="0.001000" diaginertia="0.000000016667 0.000000016667 0.000000016667" />
                   <joint name="l_hip_thigh_joint" type="hinge" axis="0.000000 0.000000 1.000000" pos="0.000000 0.000000 0.000000" range="-3.14159 3.14159" />
@@ -35,26 +35,26 @@
                     <joint name="l_hip_calf_joint" type="hinge" axis="0.000000 0.000000 1.000000" pos="0.000000 0.000000 0.000000" range="-3.14159 3.14159" />
                     <inertial pos="0.000000 -0.012000 0.000000" mass="0.065000" diaginertia="0.000017973854 0.000010661354 0.000016111875" />
                     <geom type="mesh" mesh="motor_mesh" rgba="0.89804 0.91765 0.92941 1.0" contype="0" conaffinity="0" group="0" />
-                    <geom type="box" size="0.014250 0.023250 0.017000" pos="0.000000 -0.012000 0.000000" rgba="0.0 0.8 0.1 1.0" group="1" />
+                    <geom type="box" size="0.014250 0.023250 0.017000" pos="0.000000 -0.012000 0.000000" rgba="0.0 0.8 0.1 1.0" contype="0" conaffinity="0" group="1" />
                     <body name="l_hip_calf_out" pos="0.000000 0.000000 0.000000" quat="1.000000 0.000000 0.000000 0.000000">
                       <inertial pos="0.000000 0.000000 0.000000" mass="0.001000" diaginertia="0.000000016667 0.000000016667 0.000000016667" />
                       <body name="l_ankle_pitch" pos="0.000000 -0.100000 0.000000" quat="0.000000 0.000000 0.000000 1.000000">
                         <joint name="l_ankle_pitch_joint" type="hinge" axis="0.000000 0.000000 1.000000" pos="0.000000 0.000000 0.000000" range="-3.14159 3.14159" />
                         <inertial pos="0.000000 -0.012000 0.000000" mass="0.065000" diaginertia="0.000017973854 0.000010661354 0.000016111875" />
                         <geom type="mesh" mesh="motor_mesh" rgba="0.89804 0.91765 0.92941 1.0" contype="0" conaffinity="0" group="0" />
-                        <geom type="box" size="0.014250 0.023250 0.017000" pos="0.000000 -0.012000 0.000000" rgba="0.0 0.8 0.1 1.0" group="1" />
+                        <geom type="box" size="0.014250 0.023250 0.017000" pos="0.000000 -0.012000 0.000000" rgba="0.0 0.8 0.1 1.0" contype="0" conaffinity="0" group="1" />
                         <body name="l_ankle_pitch_out" pos="0.000000 0.000000 0.000000" quat="1.000000 0.000000 0.000000 0.000000">
                           <inertial pos="0.000000 0.000000 0.000000" mass="0.001000" diaginertia="0.000000016667 0.000000016667 0.000000016667" />
                           <body name="l_ankle_roll" pos="-0.040000 0.000000 0.000000" quat="0.707107 0.000000 0.707107 0.000000">
                             <inertial pos="0.000000 -0.012000 0.000000" mass="0.065000" diaginertia="0.000017973854 0.000010661354 0.000016111875" />
                             <geom type="mesh" mesh="motor_mesh" rgba="0.89804 0.91765 0.92941 1.0" contype="0" conaffinity="0" group="0" />
-                            <geom type="box" size="0.014250 0.023250 0.017000" pos="0.000000 -0.012000 0.000000" rgba="0.0 0.8 0.1 1.0" group="1" />
+                            <geom type="box" size="0.014250 0.023250 0.017000" pos="0.000000 -0.012000 0.000000" rgba="0.0 0.8 0.1 1.0" contype="0" conaffinity="0" group="1" />
                             <body name="l_ankle_roll_out" pos="0.000000 0.000000 0.000000" quat="1.000000 0.000000 0.000000 0.000000">
                               <inertial pos="0.000000 0.000000 0.000000" mass="0.001000" diaginertia="0.000000016667 0.000000016667 0.000000016667" />
                               <joint name="l_ankle_roll_joint" type="hinge" axis="0.000000 0.000000 1.000000" pos="0.000000 0.000000 0.000000" range="-3.14159 3.14159" />
                               <body name="l_end_effector" pos="0.000000 0.035000 0.040000" quat="0.500000 0.500000 -0.500000 0.500000">
                                 <inertial pos="0.000000 0.000000 0.000000" mass="0.050000" diaginertia="0.000015416667 0.000042083333 0.000056666667" />
-                                <geom type="box" size="0.050000 0.030000 0.005000" pos="0.000000 0.000000 0.000000" rgba="0.7 0.7 0.7 1.0" group="0" />
+                                <geom type="box" size="0.050000 0.030000 0.005000" pos="0.000000 0.000000 0.000000" rgba="0.7 0.7 0.7 1.0" contype="1" conaffinity="1" group="0" />
                                 <site name="left_foot" pos="0.000000 0.000000 0.000000" quat="1.000000 0.000000 0.000000 0.000000" />
                                 </body>
                               </body>
@@ -72,21 +72,21 @@
       <body name="r_hip_pitch" pos="0.050000 0.000000 0.000000" quat="0.707107 0.000000 0.707107 0.000000">
         <inertial pos="0.000000 -0.012000 0.000000" mass="0.065000" diaginertia="0.000017973854 0.000010661354 0.000016111875" />
         <geom type="mesh" mesh="motor_mesh" rgba="0.89804 0.91765 0.92941 1.0" contype="0" conaffinity="0" group="0" />
-        <geom type="box" size="0.014250 0.023250 0.017000" pos="0.000000 -0.012000 0.000000" rgba="0.0 0.8 0.1 1.0" group="1" />
+        <geom type="box" size="0.014250 0.023250 0.017000" pos="0.000000 -0.012000 0.000000" rgba="0.0 0.8 0.1 1.0" contype="0" conaffinity="0" group="1" />
         <body name="r_hip_pitch_out" pos="0.000000 0.000000 0.000000" quat="1.000000 0.000000 0.000000 0.000000">
           <inertial pos="0.000000 0.000000 0.000000" mass="0.001000" diaginertia="0.000000016667 0.000000016667 0.000000016667" />
           <joint name="r_hip_pitch_joint" type="hinge" axis="0.000000 0.000000 1.000000" pos="0.000000 0.000000 0.000000" range="-3.14159 3.14159" />
           <body name="r_hip_roll" pos="-0.000000 0.000000 0.040000" quat="0.500000 -0.500000 0.500000 0.500000">
             <inertial pos="0.000000 -0.012000 0.000000" mass="0.065000" diaginertia="0.000017973854 0.000010661354 0.000016111875" />
             <geom type="mesh" mesh="motor_mesh" rgba="0.89804 0.91765 0.92941 1.0" contype="0" conaffinity="0" group="0" />
-            <geom type="box" size="0.014250 0.023250 0.017000" pos="0.000000 -0.012000 0.000000" rgba="0.0 0.8 0.1 1.0" group="1" />
+            <geom type="box" size="0.014250 0.023250 0.017000" pos="0.000000 -0.012000 0.000000" rgba="0.0 0.8 0.1 1.0" contype="0" conaffinity="0" group="1" />
             <body name="r_hip_roll_out" pos="0.000000 0.000000 0.000000" quat="1.000000 0.000000 0.000000 0.000000">
               <inertial pos="0.000000 0.000000 0.000000" mass="0.001000" diaginertia="0.000000016667 0.000000016667 0.000000016667" />
               <joint name="r_hip_roll_joint" type="hinge" axis="0.000000 0.000000 1.000000" pos="0.000000 0.000000 0.000000" range="-3.14159 3.14159" />
               <body name="r_hip_thigh" pos="-0.000000 -0.060000 0.000000" quat="0.707107 0.707107 0.000000 0.000000">
                 <inertial pos="0.000000 -0.012000 0.000000" mass="0.065000" diaginertia="0.000017973854 0.000010661354 0.000016111875" />
                 <geom type="mesh" mesh="motor_mesh" rgba="0.89804 0.91765 0.92941 1.0" contype="0" conaffinity="0" group="0" />
-                <geom type="box" size="0.014250 0.023250 0.017000" pos="0.000000 -0.012000 0.000000" rgba="0.0 0.8 0.1 1.0" group="1" />
+                <geom type="box" size="0.014250 0.023250 0.017000" pos="0.000000 -0.012000 0.000000" rgba="0.0 0.8 0.1 1.0" contype="0" conaffinity="0" group="1" />
                 <body name="r_hip_thigh_out" pos="0.000000 0.000000 0.000000" quat="1.000000 0.000000 0.000000 0.000000">
                   <inertial pos="0.000000 0.000000 0.000000" mass="0.001000" diaginertia="0.000000016667 0.000000016667 0.000000016667" />
                   <joint name="r_hip_thigh_joint" type="hinge" axis="0.000000 0.000000 1.000000" pos="0.000000 0.000000 0.000000" range="-3.14159 3.14159" />
@@ -94,26 +94,26 @@
                     <joint name="r_hip_calf_joint" type="hinge" axis="0.000000 0.000000 1.000000" pos="0.000000 0.000000 0.000000" range="-3.14159 3.14159" />
                     <inertial pos="0.000000 -0.012000 0.000000" mass="0.065000" diaginertia="0.000017973854 0.000010661354 0.000016111875" />
                     <geom type="mesh" mesh="motor_mesh" rgba="0.89804 0.91765 0.92941 1.0" contype="0" conaffinity="0" group="0" />
-                    <geom type="box" size="0.014250 0.023250 0.017000" pos="0.000000 -0.012000 0.000000" rgba="0.0 0.8 0.1 1.0" group="1" />
+                    <geom type="box" size="0.014250 0.023250 0.017000" pos="0.000000 -0.012000 0.000000" rgba="0.0 0.8 0.1 1.0" contype="0" conaffinity="0" group="1" />
                     <body name="r_hip_calf_out" pos="0.000000 0.000000 0.000000" quat="1.000000 0.000000 0.000000 0.000000">
                       <inertial pos="0.000000 0.000000 0.000000" mass="0.001000" diaginertia="0.000000016667 0.000000016667 0.000000016667" />
                       <body name="r_ankle_pitch" pos="-0.000000 -0.100000 0.000000" quat="-0.000000 0.000000 0.000000 1.000000">
                         <joint name="r_ankle_pitch_joint" type="hinge" axis="0.000000 0.000000 1.000000" pos="0.000000 0.000000 0.000000" range="-3.14159 3.14159" />
                         <inertial pos="0.000000 -0.012000 0.000000" mass="0.065000" diaginertia="0.000017973854 0.000010661354 0.000016111875" />
                         <geom type="mesh" mesh="motor_mesh" rgba="0.89804 0.91765 0.92941 1.0" contype="0" conaffinity="0" group="0" />
-                        <geom type="box" size="0.014250 0.023250 0.017000" pos="0.000000 -0.012000 0.000000" rgba="0.0 0.8 0.1 1.0" group="1" />
+                        <geom type="box" size="0.014250 0.023250 0.017000" pos="0.000000 -0.012000 0.000000" rgba="0.0 0.8 0.1 1.0" contype="0" conaffinity="0" group="1" />
                         <body name="r_ankle_pitch_out" pos="0.000000 0.000000 0.000000" quat="1.000000 0.000000 0.000000 0.000000">
                           <inertial pos="0.000000 0.000000 0.000000" mass="0.001000" diaginertia="0.000000016667 0.000000016667 0.000000016667" />
                           <body name="r_ankle_roll" pos="0.040000 0.000000 0.000000" quat="0.707107 0.000000 -0.707107 0.000000">
                             <inertial pos="0.000000 -0.012000 0.000000" mass="0.065000" diaginertia="0.000017973854 0.000010661354 0.000016111875" />
                             <geom type="mesh" mesh="motor_mesh" rgba="0.89804 0.91765 0.92941 1.0" contype="0" conaffinity="0" group="0" />
-                            <geom type="box" size="0.014250 0.023250 0.017000" pos="0.000000 -0.012000 0.000000" rgba="0.0 0.8 0.1 1.0" group="1" />
+                            <geom type="box" size="0.014250 0.023250 0.017000" pos="0.000000 -0.012000 0.000000" rgba="0.0 0.8 0.1 1.0" contype="0" conaffinity="0" group="1" />
                             <body name="r_ankle_roll_out" pos="0.000000 0.000000 0.000000" quat="1.000000 0.000000 0.000000 0.000000">
                               <inertial pos="0.000000 0.000000 0.000000" mass="0.001000" diaginertia="0.000000016667 0.000000016667 0.000000016667" />
                               <joint name="r_ankle_roll_joint" type="hinge" axis="0.000000 0.000000 1.000000" pos="0.000000 0.000000 0.000000" range="-3.14159 3.14159" />
                               <body name="r_end_effector" pos="-0.000000 0.035000 0.040000" quat="0.500000 0.500000 0.500000 -0.500000">
                                 <inertial pos="0.000000 0.000000 0.000000" mass="0.050000" diaginertia="0.000015416667 0.000042083333 0.000056666667" />
-                                <geom type="box" size="0.050000 0.030000 0.005000" pos="0.000000 0.000000 0.000000" rgba="0.7 0.7 0.7 1.0" group="0" />
+                                <geom type="box" size="0.050000 0.030000 0.005000" pos="0.000000 0.000000 0.000000" rgba="0.7 0.7 0.7 1.0" contype="1" conaffinity="1" group="0" />
                                 <site name="right_foot" pos="0.000000 0.000000 0.000000" quat="1.000000 0.000000 0.000000 0.000000" />
                                 </body>
                               </body>
@@ -131,7 +131,7 @@
       <body name="trunk_link" pos="0.000000 0.000000 0.110000" quat="1.000000 0.000000 0.000000 0.000000">
         <joint name="base_to_trunk" type="hinge" axis="0.000000 0.000000 1.000000" range="-3.14159 3.14159" />
         <inertial pos="0.000000 0.000000 0.000000" mass="0.300000" diaginertia="0.000565000000 0.000685000000 0.000125000000" />
-        <geom type="box" size="0.035000 0.005000 0.075000" pos="0.000000 0.000000 0.000000" rgba="0.7 0.7 0.7 1.0" group="0" />
+        <geom type="box" size="0.035000 0.005000 0.075000" pos="0.000000 0.000000 0.000000" rgba="0.7 0.7 0.7 1.0" contype="0" conaffinity="0" group="0" />
         </body>
       </body>
     </worldbody>

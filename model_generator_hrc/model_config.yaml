@@ -1,20 +1,20 @@
 version: 1
 
 robot:
-  name: phonebot_general_6motor
+  name: chopstick_bot
 
 # If you run: `python3 model_generator.py` (no CLI args),
 # the generator will read these and write outputs automatically.
 output:
   out_dir: /media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/ChopstickBot/model_generator_hrc
-  urdf_name: phonebot_general.urdf
-  mjcf_name: phonebot_general.xml
+  urdf_name: chopstick_bot_general.urdf
+  mjcf_name: chopstick_bot_general.xml
 
 options:
   floating_base: true
-  # If true, create small-inertia helper bodies for motor outputs (needed for joint-after-motor topology).
+  # Match ChopsticBot config default: no extra joint-frame inertia bodies.
   use_joint_frames: true
-  # If true, emit MJCF sites+sensors (imu, feet, joint sensors)
+  # Keep sensors off for this config by default (can turn on when needed).
   add_sensors: true
 
 sensors:
@@ -45,34 +45,50 @@ components:
     collision_rgba: [0.0, 0.8, 0.1, 1.0]
     # Default motor shaft axis in motor frame
     joint_axis_xyz: [0.0, 0.0, 1.0]
+    # MJCF contact filtering (explicit):
+    # Default fast-sim: motor visual mesh and motor box do NOT collide.
+    mesh_contype: 0
+    mesh_conaffinity: 0
+    box_contype: 0
+    box_conaffinity: 0
 
   frame:
     mass_kg: 0.001
     size_xyz: [0.01, 0.01, 0.01]
 
   trunk:
-    mass_kg: 0.30
-    size_xyz: [0.07, 0.01, 0.15]
+    mass_kg: 0.20
+    size_xyz: [0.05, 0.05, 0.05]
     visual_rgba: [0.7, 0.7, 0.7, 1.0]
     # Optional: if the trunk frame origin is not at its box center/COM
     com_offset_xyz: [0.0, 0.0, 0.0]
     geom_offset_xyz: [0.0, 0.0, 0.0]
+    # MJCF contact filtering (explicit): trunk does NOT collide by default.
+    geom_contype: 0
+    geom_conaffinity: 0
 
   end_effector:
-    # End-effector visual/collision and inertial
-    mass_kg: 0.05
+    # Chopstick leg bar (cylinder)
+    mass_kg: 0.03
     visual_rgba: [0.7, 0.7, 0.7, 1.0]
-    # Optional: if the end-effector frame origin is not at its geometry center/COM
+    # Link frame is at the joint; cylinder COM is at its center (shifted down the bar)
+    # Put COM and geometry at the end-effector link origin; place the link itself using left_leg.end_effector.xyz/rpy.
     com_offset_xyz: [0.0, 0.0, 0.0]
     geom_offset_xyz: [0.0, 0.0, 0.0]
+    # MJCF contact filtering (explicit): end-effector SHOULD collide.
+    geom_contype: 1
+    geom_conaffinity: 1
+    # geom_offset_rpy will be added in generator (rotate cylinder axis Z -> +Y)
+    geom_offset_rpy: [1.5707963267948966, 0.0, 0.0]
     shape:
-      type: box
-      size_xyz: [0.10, 0.06, 0.01]
+      type: cylinder
+      radius: 0.005
+      length: 0.20
 
 # Trunk attaches as the 3rd branch from the base (after legs are emitted in XML order).
 trunk:
   mount:
-    xyz: [0.0, 0.0, 0.11]
+    xyz: [0.0, 0.0, 0.05]
     rpy: [0.0, 0.0, 0.0]
   joint:
     name: base_to_trunk
@@ -80,47 +96,22 @@ trunk:
     axis_xyz: [0.0, 0.0, 1.0]
 
 left_leg:
-  # PhoneBot-style 6 motors per leg (copied from PhoneBot_model_generator_hrc/model_config.yaml mounts)
+  # ChopstickBot: 2 motors per side (hip_pitch + hip_roll), then a bar end-effector.
   motors:
-    # base -> hip_pitch
     - name: hip_pitch
-      xyz: [-0.05, 0.0, 0.0]
+      xyz: [-0.04, 0.0, 0.0]
       rpy: [0.0, -1.5707963267948966, 0.0]
       rotates_with_joint: false
-
-    # hip_pitch -> hip_roll
     - name: hip_roll
       xyz: [0.0, 0.0, 0.04]
       rpy: [0.0, -1.5707963267948966, -1.5707963267948966]
       rotates_with_joint: false
 
-    # hip_roll -> hip_thigh
-    - name: hip_thigh
-      xyz: [0.0, -0.06, 0.0]
-      rpy: [1.5707963267948966, 0.0, 0.0]
-      rotates_with_joint: false
-
-    # hip_thigh -> hip_calf
-    - name: hip_calf
-      xyz: [0.0, 0.0, 0.04]
-      rpy: [-1.5707963267948966, 0.0, -1.5707963267948966]
-      rotates_with_joint: true
-
-    # hip_calf -> ankle_pitch
-    - name: ankle_pitch
-      xyz: [0.0, -0.10, 0.0]
-      rpy: [0.0, 0.0, 3.141592653589793]
-      rotates_with_joint: true
-
-    # ankle_pitch -> ankle_roll
-    - name: ankle_roll
-      xyz: [-0.04, 0.0, 0.0]
-      rpy: [0.0, 1.5707963267948966, 0.0]
-      rotates_with_joint: false
-
   end_effector:
-    # PhoneBot foot mount (ankle_roll joint frame -> foot link frame)
-    xyz: [0.0, 0.035, 0.04]
-    rpy: [1.5707963267948966, -1.5707963267948966, 0.0]
+    # hip_roll motor output -> bar link
+    # Place the bar link origin at the cylinder center so the top end is at the hip_roll output.
+    # Keep the original 17cm placement (center is 17cm down the bar axis).
+    xyz: [0.0, -0.17, 0.0]
+    rpy: [0.0, 0.0, 0.0]
 
 

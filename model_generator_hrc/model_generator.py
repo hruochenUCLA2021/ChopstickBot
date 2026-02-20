@@ -318,20 +318,37 @@ def _mj_inertial_cylinder_z(body: ET.Element, mass: float, radius: float, length
     )
 
 
-def _mj_geom_mesh(body: ET.Element, mesh_name: str, rgba: list[float]) -> None:
+def _mj_geom_mesh(
+    body: ET.Element,
+    mesh_name: str,
+    rgba: list[float],
+    *,
+    contype: int = 0,
+    conaffinity: int = 0,
+    group: str = "0",
+) -> None:
     ET.SubElement(
         body,
         "geom",
         type="mesh",
         mesh=mesh_name,
         rgba=" ".join(str(float(x)) for x in rgba),
-        contype="0",
-        conaffinity="0",
-        group="0",
+        contype=str(int(contype)),
+        conaffinity=str(int(conaffinity)),
+        group=group,
     )
 
 
-def _mj_geom_box(body: ET.Element, size_xyz: tuple[float, float, float], pos_xyz: tuple[float, float, float], rgba: list[float], group: str) -> None:
+def _mj_geom_box(
+    body: ET.Element,
+    size_xyz: tuple[float, float, float],
+    pos_xyz: tuple[float, float, float],
+    rgba: list[float],
+    *,
+    group: str,
+    contype: int = 1,
+    conaffinity: int = 1,
+) -> None:
     # MuJoCo box uses half-sizes.
     sx, sy, sz = (0.5 * size_xyz[0], 0.5 * size_xyz[1], 0.5 * size_xyz[2])
     ET.SubElement(
@@ -341,6 +358,8 @@ def _mj_geom_box(body: ET.Element, size_xyz: tuple[float, float, float], pos_xyz
         size=fmt_xyz(sx, sy, sz),
         pos=fmt_xyz(*pos_xyz),
         rgba=" ".join(str(float(x)) for x in rgba),
+        contype=str(int(contype)),
+        conaffinity=str(int(conaffinity)),
         group=group,
     )
 
@@ -371,6 +390,10 @@ def build_mjcf(cfg: dict, *, motor_mesh_file: str) -> ET.ElementTree:
     motor_vis_rgba = list(motor_c.get("visual_rgba", [0.7, 0.7, 0.7, 1.0]))
     motor_col_rgba = list(motor_c.get("collision_rgba", [0.0, 0.8, 0.1, 1.0]))
     motor_axis_default = normalize3(as_vec3(motor_c.get("joint_axis_xyz", (0.0, 0.0, 1.0))))
+    motor_mesh_contype = int(motor_c.get("mesh_contype", 0))
+    motor_mesh_conaffinity = int(motor_c.get("mesh_conaffinity", 0))
+    motor_box_contype = int(motor_c.get("box_contype", 1))
+    motor_box_conaffinity = int(motor_c.get("box_conaffinity", 1))
 
     frame_c = comp.get("frame", {})
     frame_mass = float(frame_c.get("mass_kg", 0.001))
@@ -382,6 +405,8 @@ def build_mjcf(cfg: dict, *, motor_mesh_file: str) -> ET.ElementTree:
     ee_com = as_vec3(ee_c.get("com_offset_xyz", (0.0, 0.0, 0.0)))
     ee_geom = as_vec3(ee_c.get("geom_offset_xyz", (0.0, 0.0, 0.0)))
     ee_geom_rpy = as_vec3(ee_c.get("geom_offset_rpy", (0.0, 0.0, 0.0)))
+    ee_geom_contype = int(ee_c.get("geom_contype", 1))
+    ee_geom_conaffinity = int(ee_c.get("geom_conaffinity", 1))
     ee_shape = ee_c["shape"]
     ee_type = str(ee_shape["type"]).lower()
     if ee_type == "box":
@@ -410,6 +435,8 @@ def build_mjcf(cfg: dict, *, motor_mesh_file: str) -> ET.ElementTree:
     trunk_com = as_vec3(trunk_c.get("com_offset_xyz", (0.0, 0.0, 0.0)))
     trunk_geom = as_vec3(trunk_c.get("geom_offset_xyz", (0.0, 0.0, 0.0)))
     trunk_geom_rpy = as_vec3(trunk_c.get("geom_offset_rpy", (0.0, 0.0, 0.0)))
+    trunk_geom_contype = int(trunk_c.get("geom_contype", 1))
+    trunk_geom_conaffinity = int(trunk_c.get("geom_conaffinity", 1))
 
     def add_frame_body(parent: ET.Element, name: str) -> ET.Element:
         b = ET.SubElement(parent, "body", name=name, pos=fmt_xyz(0, 0, 0), quat=fmt_quat_wxyz((1.0, 0.0, 0.0, 0.0)))
@@ -444,8 +471,8 @@ def build_mjcf(cfg: dict, *, motor_mesh_file: str) -> ET.ElementTree:
             ET.SubElement(motor_body, "joint", name=f"{prefix}_{name}_joint", type="hinge", axis=fmt_xyz(*axis), pos=fmt_xyz(0, 0, 0), range="-3.14159 3.14159")
 
         _mj_inertial_box(motor_body, motor_mass, motor_size, motor_com)
-        _mj_geom_mesh(motor_body, "motor_mesh", motor_vis_rgba)
-        _mj_geom_box(motor_body, motor_size, motor_com, motor_col_rgba, group="1")
+        _mj_geom_mesh(motor_body, "motor_mesh", motor_vis_rgba, contype=motor_mesh_contype, conaffinity=motor_mesh_conaffinity, group="0")
+        _mj_geom_box(motor_body, motor_size, motor_com, motor_col_rgba, group="1", contype=motor_box_contype, conaffinity=motor_box_conaffinity)
 
         out_body = add_frame_body(motor_body, f"{prefix}_{name}_out")
         if not rotates:
@@ -475,7 +502,7 @@ def build_mjcf(cfg: dict, *, motor_mesh_file: str) -> ET.ElementTree:
         if ee_type == "box":
             assert ee_size is not None
             _mj_inertial_box(ee_body, ee_mass, ee_size, ee_com)
-            _mj_geom_box(ee_body, ee_size, ee_geom, ee_rgba, group="0")
+            _mj_geom_box(ee_body, ee_size, ee_geom, ee_rgba, group="0", contype=ee_geom_contype, conaffinity=ee_geom_conaffinity)
         else:
             r = float(ee_radius)
             L = float(ee_length)
@@ -489,6 +516,8 @@ def build_mjcf(cfg: dict, *, motor_mesh_file: str) -> ET.ElementTree:
                 pos=fmt_xyz(*ee_geom),
                 quat=fmt_quat_wxyz(gq),
                 rgba=" ".join(str(float(x)) for x in ee_rgba),
+                contype=str(int(ee_geom_contype)),
+                conaffinity=str(int(ee_geom_conaffinity)),
                 group="0",
             )
 
@@ -508,8 +537,8 @@ def build_mjcf(cfg: dict, *, motor_mesh_file: str) -> ET.ElementTree:
         imu_q = quat_from_R(R_from_rpy(*imu_site_rpy))
         ET.SubElement(base_body, "site", name=imu_site_name, pos=fmt_xyz(*imu_site_xyz), quat=fmt_quat_wxyz(imu_q))
     _mj_inertial_box(base_body, motor_mass, motor_size, motor_com)
-    _mj_geom_mesh(base_body, "motor_mesh", motor_vis_rgba)
-    _mj_geom_box(base_body, motor_size, motor_com, motor_col_rgba, group="1")
+    _mj_geom_mesh(base_body, "motor_mesh", motor_vis_rgba, contype=motor_mesh_contype, conaffinity=motor_mesh_conaffinity, group="0")
+    _mj_geom_box(base_body, motor_size, motor_com, motor_col_rgba, group="1", contype=motor_box_contype, conaffinity=motor_box_conaffinity)
 
     # Branch order: left leg, right leg, trunk
     add_leg("l", mirror=False)
@@ -532,7 +561,7 @@ def build_mjcf(cfg: dict, *, motor_mesh_file: str) -> ET.ElementTree:
         range="-3.14159 3.14159",
     )
     _mj_inertial_box(trunk_body, trunk_mass, trunk_size, trunk_com)
-    _mj_geom_box(trunk_body, trunk_size, trunk_geom, trunk_rgba, group="0")
+    _mj_geom_box(trunk_body, trunk_size, trunk_geom, trunk_rgba, group="0", contype=trunk_geom_contype, conaffinity=trunk_geom_conaffinity)
 
     # Sensors (IMU + feet + per-joint)
     if add_sensors:
