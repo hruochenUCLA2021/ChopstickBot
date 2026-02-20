@@ -192,3 +192,5 @@ model_modification/mjcf/robot_realtime_state_saved_in_simulate/*
 *.gif
 
 **/trash/
+
+**/trash_files/*

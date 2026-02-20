@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import math
 import sys
 import xml.etree.ElementTree as ET
 from pathlib import Path
@@ -173,6 +174,7 @@ def build_urdf(cfg: dict) -> ET.ElementTree:
     ee_rgba = list(ee_c.get("visual_rgba", [0.7, 0.7, 0.7, 1.0]))
     ee_com = as_vec3(ee_c.get("com_offset_xyz", (0.0, 0.0, 0.0)))
     ee_geom = as_vec3(ee_c.get("geom_offset_xyz", (0.0, 0.0, 0.0)))
+    ee_geom_rpy = as_vec3(ee_c.get("geom_offset_rpy", (0.0, 0.0, 0.0)))
     ee_shape = ee_c["shape"]
     ee_type = str(ee_shape["type"]).lower()
     if ee_type == "box":
@@ -244,14 +246,14 @@ def build_urdf(cfg: dict) -> ET.ElementTree:
         eel = ET.SubElement(robot, "link", name=ee_link)
         if ee_type == "box":
             assert ee_size is not None
-            _urdf_add_visual_box(eel, ee_size, ee_rgba, xyz=ee_geom, rpy=(0.0, 0.0, 0.0))
-            _urdf_add_collision_box(eel, ee_size, xyz=ee_geom, rpy=(0.0, 0.0, 0.0))
+            _urdf_add_visual_box(eel, ee_size, ee_rgba, xyz=ee_geom, rpy=ee_geom_rpy)
+            _urdf_add_collision_box(eel, ee_size, xyz=ee_geom, rpy=ee_geom_rpy)
             _urdf_add_inertial_box(eel, ee_mass, ee_size, com_xyz=ee_com)
         else:
             r = float(ee_radius)
             L = float(ee_length)
-            _urdf_add_visual_cylinder_z(eel, r, L, ee_rgba, xyz=ee_geom, rpy=(0.0, 0.0, 0.0))
-            _urdf_add_collision_cylinder_z(eel, r, L, xyz=ee_geom, rpy=(0.0, 0.0, 0.0))
+            _urdf_add_visual_cylinder_z(eel, r, L, ee_rgba, xyz=ee_geom, rpy=ee_geom_rpy)
+            _urdf_add_collision_cylinder_z(eel, r, L, xyz=ee_geom, rpy=ee_geom_rpy)
             _urdf_add_inertial_cylinder_z(eel, ee_mass, r, L, com_xyz=ee_com)
         _urdf_add_joint(robot, f"{prefix}_end_effector_fixed", "fixed", parent_out, ee_link, eexyz, eerpy)
 
@@ -272,10 +274,11 @@ def build_urdf(cfg: dict) -> ET.ElementTree:
     trunk_rgba = list(trunk_c.get("visual_rgba", [0.7, 0.7, 0.7, 1.0]))
     trunk_com = as_vec3(trunk_c.get("com_offset_xyz", (0.0, 0.0, 0.0)))
     trunk_geom = as_vec3(trunk_c.get("geom_offset_xyz", (0.0, 0.0, 0.0)))
+    trunk_geom_rpy = as_vec3(trunk_c.get("geom_offset_rpy", (0.0, 0.0, 0.0)))
     trunk_link = "trunk_link"
     tlink = ET.SubElement(robot, "link", name=trunk_link)
-    _urdf_add_visual_box(tlink, trunk_size, trunk_rgba, xyz=trunk_geom, rpy=(0.0, 0.0, 0.0))
-    _urdf_add_collision_box(tlink, trunk_size, xyz=trunk_geom, rpy=(0.0, 0.0, 0.0))
+    _urdf_add_visual_box(tlink, trunk_size, trunk_rgba, xyz=trunk_geom, rpy=trunk_geom_rpy)
+    _urdf_add_collision_box(tlink, trunk_size, xyz=trunk_geom, rpy=trunk_geom_rpy)
     _urdf_add_inertial_box(tlink, trunk_mass, trunk_size, com_xyz=trunk_com)
 
     tm = cfg["trunk"]["mount"]
@@ -357,6 +360,7 @@ def build_mjcf(cfg: dict) -> ET.ElementTree:
     opts = cfg.get("options", {}) or {}
     floating_base = bool(opts.get("floating_base", True))
     use_joint_frames = bool(opts.get("use_joint_frames", True))
+    add_sensors = bool(opts.get("add_sensors", True))
 
     motor_c = comp["motor"]
     motor_mass = float(motor_c["mass_kg"])
@@ -375,6 +379,7 @@ def build_mjcf(cfg: dict) -> ET.ElementTree:
     ee_rgba = list(ee_c.get("visual_rgba", [0.7, 0.7, 0.7, 1.0]))
     ee_com = as_vec3(ee_c.get("com_offset_xyz", (0.0, 0.0, 0.0)))
     ee_geom = as_vec3(ee_c.get("geom_offset_xyz", (0.0, 0.0, 0.0)))
+    ee_geom_rpy = as_vec3(ee_c.get("geom_offset_rpy", (0.0, 0.0, 0.0)))
     ee_shape = ee_c["shape"]
     ee_type = str(ee_shape["type"]).lower()
     if ee_type == "box":
@@ -389,11 +394,20 @@ def build_mjcf(cfg: dict) -> ET.ElementTree:
         raise ValueError(f"Unsupported end_effector.shape.type: {ee_type!r}")
 
     trunk_c = comp["trunk"]
+    sensor_cfg = cfg.get("sensors", {}) or {}
+    imu_site_cfg = sensor_cfg.get("imu_site", {}) or {}
+    ee_site_cfg = sensor_cfg.get("end_effector_sites", {}) or {}
+    imu_site_name = str(imu_site_cfg.get("name", "imu"))
+    imu_site_xyz = as_vec3(imu_site_cfg.get("xyz", (0.0, 0.0, 0.0)))
+    imu_site_rpy = as_vec3(imu_site_cfg.get("rpy", (0.0, 0.0, math.pi / 2.0)))
+    left_ee_site_name = str(ee_site_cfg.get("left_name", "left_foot"))
+    right_ee_site_name = str(ee_site_cfg.get("right_name", "right_foot"))
     trunk_mass = float(trunk_c["mass_kg"])
     trunk_size = as_vec3(trunk_c["size_xyz"])
     trunk_rgba = list(trunk_c.get("visual_rgba", [0.7, 0.7, 0.7, 1.0]))
     trunk_com = as_vec3(trunk_c.get("com_offset_xyz", (0.0, 0.0, 0.0)))
     trunk_geom = as_vec3(trunk_c.get("geom_offset_xyz", (0.0, 0.0, 0.0)))
+    trunk_geom_rpy = as_vec3(trunk_c.get("geom_offset_rpy", (0.0, 0.0, 0.0)))
 
     def add_frame_body(parent: ET.Element, name: str) -> ET.Element:
         b = ET.SubElement(parent, "body", name=name, pos=fmt_xyz(0, 0, 0), quat=fmt_quat_wxyz((1.0, 0.0, 0.0, 0.0)))
@@ -464,20 +478,32 @@ def build_mjcf(cfg: dict) -> ET.ElementTree:
             r = float(ee_radius)
             L = float(ee_length)
             _mj_inertial_cylinder_z(ee_body, ee_mass, r, L, ee_com)
+            gq = quat_from_R(R_from_rpy(*ee_geom_rpy))
             ET.SubElement(
                 ee_body,
                 "geom",
                 type="cylinder" if ee_type == "cylinder" else "capsule",
                 size=f"{r:.6f} {0.5*L:.6f}",
                 pos=fmt_xyz(*ee_geom),
+                quat=fmt_quat_wxyz(gq),
                 rgba=" ".join(str(float(x)) for x in ee_rgba),
                 group="0",
             )
+
+        # Site on end-effector for foot sensors (name matches HERMES conventions)
+        if add_sensors:
+            site_name = left_ee_site_name if prefix == "l" else right_ee_site_name
+            ET.SubElement(ee_body, "site", name=site_name, pos=fmt_xyz(0.0, 0.0, 0.0), quat=fmt_quat_wxyz((1.0, 0.0, 0.0, 0.0)))
 
     world = ET.SubElement(mj, "worldbody")
     base_body = ET.SubElement(world, "body", name="base_motor_link", pos=fmt_xyz(0, 0, 0), quat=fmt_quat_wxyz((1.0, 0.0, 0.0, 0.0)))
     if floating_base:
         ET.SubElement(base_body, "freejoint", name="floating_base")
+
+    # IMU site on base body (rotate around Z by +90deg so +X faces robot front)
+    if add_sensors:
+        imu_q = quat_from_R(R_from_rpy(*imu_site_rpy))
+        ET.SubElement(base_body, "site", name=imu_site_name, pos=fmt_xyz(*imu_site_xyz), quat=fmt_quat_wxyz(imu_q))
     _mj_inertial_box(base_body, motor_mass, motor_size, motor_com)
     _mj_geom_mesh(base_body, "motor_mesh", motor_vis_rgba)
     _mj_geom_box(base_body, motor_size, motor_com, motor_col_rgba, group="1")
@@ -505,6 +531,46 @@ def build_mjcf(cfg: dict) -> ET.ElementTree:
     _mj_inertial_box(trunk_body, trunk_mass, trunk_size, trunk_com)
     _mj_geom_box(trunk_body, trunk_size, trunk_geom, trunk_rgba, group="0")
 
+    # Sensors (IMU + feet + per-joint)
+    if add_sensors:
+        sensor = ET.SubElement(mj, "sensor")
+
+        # IMU-like sensors (pattern from HERMES mjcf)
+        ET.SubElement(sensor, "framepos", name="position", objtype="site", objname=imu_site_name, noise="0.001")
+        ET.SubElement(sensor, "velocimeter", name="linear-velocity", site=imu_site_name, noise="0.001", cutoff="30")
+        ET.SubElement(sensor, "framequat", name="orientation", objtype="site", objname=imu_site_name, noise="0.001")
+        ET.SubElement(sensor, "gyro", name="angular-velocity", site=imu_site_name, noise="0.005", cutoff="34.9")
+        ET.SubElement(sensor, "accelerometer", name="linear-acceleration", site=imu_site_name, noise="0.005", cutoff="157")
+        ET.SubElement(sensor, "magnetometer", name="magnetometer", site=imu_site_name)
+
+        ET.SubElement(sensor, "gyro", site=imu_site_name, name="gyro")
+        ET.SubElement(sensor, "velocimeter", site=imu_site_name, name="local_linvel")
+        ET.SubElement(sensor, "accelerometer", site=imu_site_name, name="accelerometer")
+        ET.SubElement(sensor, "framezaxis", objtype="site", objname=imu_site_name, name="upvector")
+        ET.SubElement(sensor, "framexaxis", objtype="site", objname=imu_site_name, name="forwardvector")
+        ET.SubElement(sensor, "framelinvel", objtype="site", objname=imu_site_name, name="global_linvel")
+        ET.SubElement(sensor, "frameangvel", objtype="site", objname=imu_site_name, name="global_angvel")
+
+        # Foot-based sensors
+        ET.SubElement(sensor, "framelinvel", objtype="site", objname=left_ee_site_name, name="left_foot_global_linvel")
+        ET.SubElement(sensor, "framelinvel", objtype="site", objname=right_ee_site_name, name="right_foot_global_linvel")
+        ET.SubElement(sensor, "framepos", objtype="site", objname=left_ee_site_name, name="left_foot_pos")
+        ET.SubElement(sensor, "framepos", objtype="site", objname=right_ee_site_name, name="right_foot_pos")
+
+        # Joint sensors (pos/vel/actuator force)
+        def _add_joint_sensors(jname: str) -> None:
+            ET.SubElement(sensor, "jointpos", name=f"{jname}_pos", joint=jname)
+            ET.SubElement(sensor, "jointvel", name=f"{jname}_vel", joint=jname)
+            ET.SubElement(sensor, "jointactuatorfrc", name=f"{jname}_frc", joint=jname)
+
+        for m in cfg["left_leg"]["motors"]:
+            stage = str(m["name"])
+            _add_joint_sensors(f"l_{stage}_joint")
+            _add_joint_sensors(f"r_{stage}_joint")
+
+        trunk_joint_name = str(cfg["trunk"]["joint"].get("name", "base_to_trunk"))
+        _add_joint_sensors(trunk_joint_name)
+
     _indent(mj)
     return ET.ElementTree(mj)
 
@@ -517,13 +583,12 @@ def _write_xml(path: Path, tree: ET.ElementTree, declaration: bool) -> None:
 def main() -> int:
     ap = argparse.ArgumentParser(description="General model generator (URDF + MJCF) driven by per-motor YAML lists.")
     ap.add_argument("--config", type=str, default=str(Path(__file__).resolve().parent / "model_config.yaml"))
-    ap.add_argument("--out-dir", type=str, default=str(DEFAULT_OUT_DIR))
-    ap.add_argument("--urdf-name", type=str, default="robot.urdf")
-    ap.add_argument("--mjcf-name", type=str, default="robot.xml")
+    ap.add_argument("--out-dir", type=str, default=None)
+    ap.add_argument("--urdf-name", type=str, default=None)
+    ap.add_argument("--mjcf-name", type=str, default=None)
     args = ap.parse_args()
 
     cfg_path = Path(args.config).resolve()
-    out_dir = Path(args.out_dir).resolve()
     if not cfg_path.exists():
         print(f"[ERROR] config not found: {cfg_path}", file=sys.stderr)
         return 2
@@ -537,8 +602,13 @@ def main() -> int:
     urdf_tree = build_urdf(cfg)
     mjcf_tree = build_mjcf(cfg)
 
-    urdf_path = out_dir / args.urdf_name
-    mjcf_path = out_dir / args.mjcf_name
+    out_cfg = cfg.get("output", {}) or {}
+    out_dir = Path(args.out_dir or out_cfg.get("out_dir") or DEFAULT_OUT_DIR).resolve()
+    urdf_name = str(args.urdf_name or out_cfg.get("urdf_name") or "robot.urdf")
+    mjcf_name = str(args.mjcf_name or out_cfg.get("mjcf_name") or "robot.xml")
+
+    urdf_path = out_dir / urdf_name
+    mjcf_path = out_dir / mjcf_name
     _write_xml(urdf_path, urdf_tree, declaration=True)
     _write_xml(mjcf_path, mjcf_tree, declaration=False)
     print(f"[OK] wrote URDF: {urdf_path}")

@@ -59,9 +59,8 @@ components:
     mass_kg: 0.03
     visual_rgba: [0.7, 0.7, 0.7, 1.0]
     # Link frame is at the joint; cylinder COM is at its center (shifted down the bar)
-    # Put COM and geometry at the end-effector link origin; place the link itself using left_leg.end_effector.xyz/rpy.
-    com_offset_xyz: [0.0, 0.0, 0.0]
-    geom_offset_xyz: [0.0, 0.0, 0.0]
+    com_offset_xyz: [0.0, -0.17, 0.0]
+    geom_offset_xyz: [0.0, -0.17, 0.0]
     # geom_offset_rpy will be added in generator (rotate cylinder axis Z -> +Y)
     geom_offset_rpy: [1.5707963267948966, 0.0, 0.0]
     shape:
@@ -93,9 +92,7 @@ left_leg:
 
   end_effector:
     # hip_roll motor output -> bar link
-    # Place the bar link origin at the cylinder center so the top end is at the hip_roll output.
-    # Keep the original 17cm placement (center is 17cm down the bar axis).
-    xyz: [0.0, -0.17, 0.0]
+    xyz: [0.0, 0.0, 0.0]
     rpy: [0.0, 0.0, 0.0]
 
 
