@@ -1,0 +1,190 @@
+<?xml version='1.0' encoding='utf-8'?>
+<robot name="generic_bot_minimal">
+  <link name="base_motor_link">
+    <visual>
+      <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <mesh filename="/media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/reference/xm430_motor/good_conversion_stl/XL-430_new_coordinate_on_axis.STL" scale="0.001000 0.001000 0.001000" />
+        </geometry>
+      <material name="motor_mat">
+        <color rgba="0.89804 0.91765 0.92941 1.0" />
+        </material>
+      </visual>
+    <collision>
+      <origin xyz="0.000000 -0.012000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <box size="0.028500 0.046500 0.034000" />
+        </geometry>
+      </collision>
+    <inertial>
+      <origin xyz="0.000000 -0.012000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <mass value="0.065000" />
+      <inertia ixx="0.000017973854" ixy="0" ixz="0" iyy="0.000010661354" iyz="0" izz="0.000016111875" />
+      </inertial>
+    </link>
+  <link name="l_leg_motor">
+    <visual>
+      <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <mesh filename="/media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/reference/xm430_motor/good_conversion_stl/XL-430_new_coordinate_on_axis.STL" scale="0.001000 0.001000 0.001000" />
+        </geometry>
+      <material name="motor_mat">
+        <color rgba="0.89804 0.91765 0.92941 1.0" />
+        </material>
+      </visual>
+    <collision>
+      <origin xyz="0.000000 -0.012000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <box size="0.028500 0.046500 0.034000" />
+        </geometry>
+      </collision>
+    <inertial>
+      <origin xyz="0.000000 -0.012000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <mass value="0.065000" />
+      <inertia ixx="0.000017973854" ixy="0" ixz="0" iyy="0.000010661354" iyz="0" izz="0.000016111875" />
+      </inertial>
+    </link>
+  <link name="l_leg_motor_out">
+    <inertial>
+      <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <mass value="0.001000" />
+      <inertia ixx="0.000000016667" ixy="0" ixz="0" iyy="0.000000016667" iyz="0" izz="0.000000016667" />
+      </inertial>
+    </link>
+  <joint name="l_leg_motor_mount_fixed" type="fixed">
+    <origin xyz="-0.050000 0.000000 0.000000" rpy="0.000000 -1.570796 0.000000" />
+    <parent link="base_motor_link" />
+    <child link="l_leg_motor" />
+    </joint>
+  <joint name="l_leg_motor_joint" type="revolute">
+    <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
+    <parent link="l_leg_motor" />
+    <child link="l_leg_motor_out" />
+    <axis xyz="0.000000 0.000000 1.000000" />
+    <limit lower="-3.14159" upper="3.14159" effort="5.0" velocity="8.0" />
+    </joint>
+  <link name="l_end_effector">
+    <visual>
+      <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <box size="0.100000 0.060000 0.010000" />
+        </geometry>
+      <material name="box_mat">
+        <color rgba="0.7 0.7 0.7 1.0" />
+        </material>
+      </visual>
+    <collision>
+      <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <box size="0.100000 0.060000 0.010000" />
+        </geometry>
+      </collision>
+    <inertial>
+      <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <mass value="0.050000" />
+      <inertia ixx="0.000015416667" ixy="0" ixz="0" iyy="0.000042083333" iyz="0" izz="0.000056666667" />
+      </inertial>
+    </link>
+  <joint name="l_end_effector_fixed" type="fixed">
+    <origin xyz="0.000000 0.000000 0.060000" rpy="0.000000 0.000000 0.000000" />
+    <parent link="l_leg_motor_out" />
+    <child link="l_end_effector" />
+    </joint>
+  <link name="r_leg_motor">
+    <visual>
+      <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <mesh filename="/media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/reference/xm430_motor/good_conversion_stl/XL-430_new_coordinate_on_axis.STL" scale="0.001000 0.001000 0.001000" />
+        </geometry>
+      <material name="motor_mat">
+        <color rgba="0.89804 0.91765 0.92941 1.0" />
+        </material>
+      </visual>
+    <collision>
+      <origin xyz="0.000000 -0.012000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <box size="0.028500 0.046500 0.034000" />
+        </geometry>
+      </collision>
+    <inertial>
+      <origin xyz="0.000000 -0.012000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <mass value="0.065000" />
+      <inertia ixx="0.000017973854" ixy="0" ixz="0" iyy="0.000010661354" iyz="0" izz="0.000016111875" />
+      </inertial>
+    </link>
+  <link name="r_leg_motor_out">
+    <inertial>
+      <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <mass value="0.001000" />
+      <inertia ixx="0.000000016667" ixy="0" ixz="0" iyy="0.000000016667" iyz="0" izz="0.000000016667" />
+      </inertial>
+    </link>
+  <joint name="r_leg_motor_mount_fixed" type="fixed">
+    <origin xyz="0.050000 0.000000 0.000000" rpy="0.000000 1.570796 -0.000000" />
+    <parent link="base_motor_link" />
+    <child link="r_leg_motor" />
+    </joint>
+  <joint name="r_leg_motor_joint" type="revolute">
+    <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
+    <parent link="r_leg_motor" />
+    <child link="r_leg_motor_out" />
+    <axis xyz="0.000000 0.000000 1.000000" />
+    <limit lower="-3.14159" upper="3.14159" effort="5.0" velocity="8.0" />
+    </joint>
+  <link name="r_end_effector">
+    <visual>
+      <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <box size="0.100000 0.060000 0.010000" />
+        </geometry>
+      <material name="box_mat">
+        <color rgba="0.7 0.7 0.7 1.0" />
+        </material>
+      </visual>
+    <collision>
+      <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <box size="0.100000 0.060000 0.010000" />
+        </geometry>
+      </collision>
+    <inertial>
+      <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <mass value="0.050000" />
+      <inertia ixx="0.000015416667" ixy="0" ixz="0" iyy="0.000042083333" iyz="0" izz="0.000056666667" />
+      </inertial>
+    </link>
+  <joint name="r_end_effector_fixed" type="fixed">
+    <origin xyz="-0.000000 0.000000 0.060000" rpy="0.000000 -0.000000 0.000000" />
+    <parent link="r_leg_motor_out" />
+    <child link="r_end_effector" />
+    </joint>
+  <link name="trunk_link">
+    <visual>
+      <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <box size="0.070000 0.010000 0.150000" />
+        </geometry>
+      <material name="box_mat">
+        <color rgba="0.7 0.7 0.7 1.0" />
+        </material>
+      </visual>
+    <collision>
+      <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <box size="0.070000 0.010000 0.150000" />
+        </geometry>
+      </collision>
+    <inertial>
+      <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <mass value="0.300000" />
+      <inertia ixx="0.000565000000" ixy="0" ixz="0" iyy="0.000685000000" iyz="0" izz="0.000125000000" />
+      </inertial>
+    </link>
+  <joint name="base_to_trunk" type="revolute">
+    <origin xyz="0.000000 0.000000 0.110000" rpy="0.000000 0.000000 0.000000" />
+    <parent link="base_motor_link" />
+    <child link="trunk_link" />
+    <axis xyz="0.000000 0.000000 1.000000" />
+    <limit lower="-3.14159" upper="3.14159" effort="5.0" velocity="8.0" />
+    </joint>
+  </robot>

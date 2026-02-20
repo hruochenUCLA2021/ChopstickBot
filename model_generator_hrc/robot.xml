@@ -1,0 +1,45 @@
+<mujoco model="generic_bot_minimal">
+  <compiler angle="radian" balanceinertia="true" />
+  <asset>
+    <mesh name="motor_mesh" file="/media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/reference/xm430_motor/good_conversion_stl/XL-430_new_coordinate_on_axis.STL" scale="0.001000 0.001000 0.001000" />
+    </asset>
+  <worldbody>
+    <body name="base_motor_link" pos="0.000000 0.000000 0.000000" quat="1.000000 0.000000 0.000000 0.000000">
+      <freejoint name="floating_base" />
+      <inertial pos="0.000000 -0.012000 0.000000" mass="0.065000" diaginertia="0.000017973854 0.000010661354 0.000016111875" />
+      <geom type="mesh" mesh="motor_mesh" rgba="0.89804 0.91765 0.92941 1.0" contype="0" conaffinity="0" group="0" />
+      <geom type="box" size="0.014250 0.023250 0.017000" pos="0.000000 -0.012000 0.000000" rgba="0.0 0.8 0.1 1.0" group="1" />
+      <body name="l_leg_motor" pos="-0.050000 0.000000 0.000000" quat="0.707107 0.000000 -0.707107 0.000000">
+        <inertial pos="0.000000 -0.012000 0.000000" mass="0.065000" diaginertia="0.000017973854 0.000010661354 0.000016111875" />
+        <geom type="mesh" mesh="motor_mesh" rgba="0.89804 0.91765 0.92941 1.0" contype="0" conaffinity="0" group="0" />
+        <geom type="box" size="0.014250 0.023250 0.017000" pos="0.000000 -0.012000 0.000000" rgba="0.0 0.8 0.1 1.0" group="1" />
+        <body name="l_leg_motor_out" pos="0.000000 0.000000 0.000000" quat="1.000000 0.000000 0.000000 0.000000">
+          <inertial pos="0.000000 0.000000 0.000000" mass="0.001000" diaginertia="0.000000016667 0.000000016667 0.000000016667" />
+          <joint name="l_leg_motor_joint" type="hinge" axis="0.000000 0.000000 1.000000" pos="0.000000 0.000000 0.000000" range="-3.14159 3.14159" />
+          <body name="l_end_effector" pos="0.000000 0.000000 0.060000" quat="1.000000 0.000000 0.000000 0.000000">
+            <inertial pos="0.000000 0.000000 0.000000" mass="0.050000" diaginertia="0.000015416667 0.000042083333 0.000056666667" />
+            <geom type="box" size="0.050000 0.030000 0.005000" pos="0.000000 0.000000 0.000000" rgba="0.7 0.7 0.7 1.0" group="0" />
+            </body>
+          </body>
+        </body>
+      <body name="r_leg_motor" pos="0.050000 0.000000 0.000000" quat="0.707107 0.000000 0.707107 0.000000">
+        <inertial pos="0.000000 -0.012000 0.000000" mass="0.065000" diaginertia="0.000017973854 0.000010661354 0.000016111875" />
+        <geom type="mesh" mesh="motor_mesh" rgba="0.89804 0.91765 0.92941 1.0" contype="0" conaffinity="0" group="0" />
+        <geom type="box" size="0.014250 0.023250 0.017000" pos="0.000000 -0.012000 0.000000" rgba="0.0 0.8 0.1 1.0" group="1" />
+        <body name="r_leg_motor_out" pos="0.000000 0.000000 0.000000" quat="1.000000 0.000000 0.000000 0.000000">
+          <inertial pos="0.000000 0.000000 0.000000" mass="0.001000" diaginertia="0.000000016667 0.000000016667 0.000000016667" />
+          <joint name="r_leg_motor_joint" type="hinge" axis="0.000000 0.000000 1.000000" pos="0.000000 0.000000 0.000000" range="-3.14159 3.14159" />
+          <body name="r_end_effector" pos="-0.000000 0.000000 0.060000" quat="1.000000 0.000000 0.000000 0.000000">
+            <inertial pos="0.000000 0.000000 0.000000" mass="0.050000" diaginertia="0.000015416667 0.000042083333 0.000056666667" />
+            <geom type="box" size="0.050000 0.030000 0.005000" pos="0.000000 0.000000 0.000000" rgba="0.7 0.7 0.7 1.0" group="0" />
+            </body>
+          </body>
+        </body>
+      <body name="trunk_link" pos="0.000000 0.000000 0.110000" quat="1.000000 0.000000 0.000000 0.000000">
+        <joint name="base_to_trunk" type="hinge" axis="0.000000 0.000000 1.000000" range="-3.14159 3.14159" />
+        <inertial pos="0.000000 0.000000 0.000000" mass="0.300000" diaginertia="0.000565000000 0.000685000000 0.000125000000" />
+        <geom type="box" size="0.035000 0.005000 0.075000" pos="0.000000 0.000000 0.000000" rgba="0.7 0.7 0.7 1.0" group="0" />
+        </body>
+      </body>
+    </worldbody>
+  </mujoco>

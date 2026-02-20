@@ -1,0 +1,150 @@
+version: 1
+
+# PhoneBot: simplified lower-body humanoid generator (URDF + MJCF).
+#
+# All dimensions are in meters. All angles are in radians.
+#
+# URDF `origin.rpy` uses the URDF/ROS convention:
+#   - The stored values are (roll, pitch, yaw) about X, Y, Z respectively.
+#   - The resulting rotation matrix is:
+#       R = Rz(yaw) * Ry(pitch) * Rx(roll)
+#   - When applied to a vector v: v' = R * v, so Rx happens first, then Ry, then Rz.
+#
+# Symmetry:
+# - You only specify the LEFT leg here.
+# - The generator will create the RIGHT leg by mirroring across the YZ-plane (x -> -x)
+#   using proper rotation mirroring (not just negating some rpy numbers).
+#
+# Kinematic convention in this generator:
+# - Every motor is a mesh link.
+# - Between two motors, we create:
+#     parent_motor --(revolute joint about +Z)--> joint_frame --(fixed mount)--> child_motor
+#   This makes the joint axis definition independent from the child motor's mounting rotation.
+# - You control the pose between items via:
+#     joint_origin_xyz: parent_motor -> joint axis location (in parent motor frame)
+#     mount_xyz/rpy    : joint_frame -> child motor link frame
+#
+# NOTE: The numeric values below are initial placeholders. You are expected to tune
+# xyz/rpy values in `left_leg.chain` to match your desired geometry.
+
+robot:
+  name: phonebot
+
+options:
+  # If true, generator may insert intermediate `*_joint_frame` links/bodies when a motor is
+  # configured as "fixed first, joint after motor". These frames carry small inertia to keep
+  # MuJoCo happy and can make frame inspection easier/harder depending on what you want.
+  #
+  # If false, generator will NOT create any `*_joint_frame` links/bodies and will force the
+  # simple relationship (direct parent -> motor revolute joints).
+  use_joint_frames: true
+  # use_joint_frames: false
+
+  # Motor ordering option (PER MOTOR):
+  # - false: motor body fixed first, joint after (motor does NOT rotate with its own joint)
+  # - true : joint first, then motor body (motor rotates WITH its own joint)
+  #
+  # This is per-motor for the 6-motor leg chain:
+  #   hip_pitch, hip_roll, hip_thigh, hip_calf, ankle_pitch, ankle_roll
+  #
+  # Backward-compat:
+  # - You can keep the old keys below, but the new map takes priority if present.
+  motor_rotates_with_joint:
+    hip_pitch: false
+    hip_roll: false
+    hip_thigh: false
+    hip_calf: false
+    ankle_pitch: true
+    ankle_roll: false
+
+  # Old keys (optional; kept for compatibility):
+  # hip_pitch_motor_rotates_with_joint: false
+  # hip_roll_motor_rotates_with_joint: false
+
+assets:
+  motor_stl: /media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/reference/xm430_motor/good_conversion_stl/XL-430_new_coordinate_on_axis.STL
+  motor_mesh_scale: 0.001
+
+components:
+  # Motor physical model (used for inertia + collision box):
+  # XL430 approximate box: x=28.5mm, y=46.5mm, z=34mm, mass=65g
+  # Motor frame origin is not at box center: COM is +12mm in +Y.
+  motor:
+    size_xyz: [0.0285, 0.0465, 0.034]
+    # Motor frame is +12mm in +Y of the box-center frame, so the box center (COM) is -12mm in motor frame.
+    com_offset_xyz: [0.0, -0.012, 0.0]
+    mass_kg: 0.065
+    collision_rgba: [0.0, 0.8, 0.1, 1.0]
+
+  # This is only used for moving frame helper links so MuJoCo doesn't error.
+  frame:
+    mass_kg: 0.001
+
+  trunk:
+    mass_kg: 0.30
+    size_xyz: [0.07, 0.01, 0.15]        # 7cm * 1cm * 15cm (x * y * z)
+
+  foot:
+    mass_kg: 0.05
+    size_xyz: [0.10, 0.06, 0.01]
+
+trunk:
+  box_size_xyz: [0.07, 0.01, 0.15]   # 7cm * 1cm * 15cm
+  joint:
+    # base motor -> trunk (yaw)
+    origin_xyz: [0.0, 0.0, 0.11]
+    origin_rpy: [0.0, 0.0, 0.0]
+    axis_xyz: [0.0, 0.0, 1.0]
+
+left_leg:
+  # Base motor -> hip_pitch assembly mount (fixed)
+  hip_pitch_mount:
+    xyz: [-0.05, 0.0, 0.0]
+    rpy: [0.0, -1.5707963267948966, 0.0]
+
+  # Motor chain: l_hip_pitch -> l_hip_roll -> l_hip_thigh -> l_hip_calf -> l_ankle_pitch -> l_ankle_roll -> l_foot
+  #
+  # Each entry describes one boundary in a single consistent style:
+  # - parent -> child
+  # - joint_origin_xyz in parent frame
+  # - mount_xyz/rpy for child motor mount
+  chain:
+    - parent: hip_pitch
+      child: hip_roll
+      joint_origin_xyz: [0.0, 0.0, 0.04]
+      mount_xyz: [0.0, 0.0, 0.0]
+      mount_rpy: [0.0, -1.5707963267948966, -1.5707963267948966]
+
+    - parent: hip_roll
+      child: hip_thigh
+      joint_origin_xyz: [0.0, -0.06, 0.0]
+      mount_xyz: [0.0, 0.0, 0.0]
+      mount_rpy: [1.5707963267948966, 0.0, 0.0]
+
+    - parent: hip_thigh
+      child: hip_calf
+      joint_origin_xyz: [0.0, 0.0, 0.04]
+      mount_xyz: [0.0, 0.0, 0.0]
+      mount_rpy: [-1.5707963267948966, 0.0, -1.5707963267948966]
+
+    - parent: hip_calf
+      child: ankle_pitch
+      joint_origin_xyz: [0.0, -0.10, 0.0]
+      mount_xyz: [0.0, 0.0, 0.0]
+      mount_rpy: [0.0, 0.0, 3.141592653589793]
+
+    - parent: ankle_pitch
+      child: ankle_roll
+      joint_origin_xyz: [-0.04, 0.0, 0.0]
+      mount_xyz: [0.0, 0.0, 0.0]
+      mount_rpy: [0.0, 1.5707963267948966, 0.0]
+
+  foot:
+    # ankle_roll motor -> ankle_roll joint axis location (in ankle_roll motor frame)
+    joint_origin_xyz: [0.0, 0.0, 0.0]
+
+    # ankle_roll output frame -> foot link mount (fixed)
+    mount_xyz: [0.0, 0.035, 0.04]    # put foot center 5mm below ankle joint
+    mount_rpy: [1.5707963267948966, -1.5707963267948966, 0.0]
+
+

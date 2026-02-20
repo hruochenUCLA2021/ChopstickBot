@@ -1,0 +1,402 @@
+<?xml version='1.0' encoding='utf-8'?>
+<robot name="3">
+  <link name="base_link">
+    <inertial>
+      <origin xyz="0.011672590012564 0.0754963486989652 -0.209170861702287" rpy="0 0 0" />
+      <mass value="0.131635938904622" />
+      <inertia ixx="1.91553932101858E-05" ixy="4.40820055071525E-09" ixz="-2.55503272044349E-07" iyy="3.09392742802438E-05" iyz="-5.2330608648758E-09" izz="3.19799191111257E-05" />
+      </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../../../reference/phonebot_model/3/meshes/base_link.STL" />
+        </geometry>
+      <material name="">
+        <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+        </material>
+      </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../../../reference/phonebot_model/3/meshes/base_link.STL" />
+        </geometry>
+      </collision>
+    </link>
+  <link name="r_hip_pitch_link">
+    <inertial>
+      <origin xyz="0.000512585106856932 -0.0377390460968998 -0.0116725900125635" rpy="0 0 0" />
+      <mass value="0.0438786463015405" />
+      <inertia ixx="9.966209816454E-06" ixy="5.23306086487016E-09" ixz="-2.55503272044309E-07" iyy="1.10068546473359E-05" iyz="4.40820055073216E-09" izz="6.38513107006193E-06" />
+      </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../../../reference/phonebot_model/3/meshes/r_hip_pitch_link.STL" />
+        </geometry>
+      <material name="">
+        <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+        </material>
+      </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../../../reference/phonebot_model/3/meshes/r_hip_pitch_link.STL" />
+        </geometry>
+      </collision>
+    </link>
+  <joint name="r_hip_pitch_joint" type="revolute">
+    <origin xyz="0 0.03775 -0.209" rpy="-3.14159265358979 0 -3.14159265358979" />
+    <parent link="base_link" />
+    <child link="r_hip_pitch_link" />
+    <axis xyz="0 1 0" />
+    <limit lower="-3.142" upper="3.142" effort="0" velocity="0" />
+    </joint>
+  <link name="r_hip_roll_link">
+    <inertial>
+      <origin xyz="-0.0116725900125634 1.09539031014981E-05 -0.0592625851068567" rpy="0 0 0" />
+      <mass value="0.0438786463015405" />
+      <inertia ixx="6.38513107006192E-06" ixy="4.40820055073266E-09" ixz="2.55503272044307E-07" iyy="1.10068546473358E-05" iyz="-5.23306086487158E-09" izz="9.96620981645398E-06" />
+      </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../../../reference/phonebot_model/3/meshes/r_hip_roll_link.STL" />
+        </geometry>
+      <material name="">
+        <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+        </material>
+      </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../../../reference/phonebot_model/3/meshes/r_hip_roll_link.STL" />
+        </geometry>
+      </collision>
+    </link>
+  <joint name="r_hip_roll_joint" type="revolute">
+    <origin xyz="0 -0.03775 0" rpy="0 0 0" />
+    <parent link="r_hip_pitch_link" />
+    <child link="r_hip_roll_link" />
+    <axis xyz="-1 0 0" />
+    <limit lower="-3.142" upper="3.142" effort="0" velocity="0" />
+    </joint>
+  <link name="r_hip_thigh_link">
+    <inertial>
+      <origin xyz="1.0953903100219E-05 -0.000512585106857445 -0.0464225900125635" rpy="0 0 0" />
+      <mass value="0.0438786463015405" />
+      <inertia ixx="1.10068546473359E-05" ixy="-5.23306086487113E-09" ixz="4.40820055073159E-09" iyy="9.96620981645401E-06" iyz="2.55503272044309E-07" izz="6.38513107006194E-06" />
+      </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../../../reference/phonebot_model/3/meshes/r_hip_thigh_link.STL" />
+        </geometry>
+      <material name="">
+        <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+        </material>
+      </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../../../reference/phonebot_model/3/meshes/r_hip_thigh_link.STL" />
+        </geometry>
+      </collision>
+    </link>
+  <joint name="r_hip_thigh_joint" type="revolute">
+    <origin xyz="0 0 -0.0587499999999997" rpy="0 0 0" />
+    <parent link="r_hip_roll_link" />
+    <child link="r_hip_thigh_link" />
+    <axis xyz="0 0 1" />
+    <limit lower="-3.142" upper="3.142" effort="0" velocity="0" />
+    </joint>
+  <link name="r_hip_calf_link">
+    <inertial>
+      <origin xyz="-1.09539031002066E-05 -0.000512585106856929 -0.103827409987437" rpy="0 0 0" />
+      <mass value="0.0438786463015405" />
+      <inertia ixx="1.10068546473359E-05" ixy="5.23306086487085E-09" ixz="4.40820055073296E-09" iyy="9.96620981645399E-06" iyz="-2.55503272044308E-07" izz="6.38513107006194E-06" />
+      </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../../../reference/phonebot_model/3/meshes/r_hip_calf_link.STL" />
+        </geometry>
+      <material name="">
+        <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+        </material>
+      </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../../../reference/phonebot_model/3/meshes/r_hip_calf_link.STL" />
+        </geometry>
+      </collision>
+    </link>
+  <joint name="r_hip_calf_joint" type="revolute">
+    <origin xyz="0 0 -0.03475" rpy="0 0 0" />
+    <parent link="r_hip_thigh_link" />
+    <child link="r_hip_calf_link" />
+    <axis xyz="0 1 0" />
+    <limit lower="-3.142" upper="3.142" effort="0" velocity="0" />
+    </joint>
+  <link name="r_ankle_pitch_link">
+    <inertial>
+      <origin xyz="-0.037237414893143 -1.09539031002194E-05 0.0116725900125634" rpy="0 0 0" />
+      <mass value="0.0438786463015405" />
+      <inertia ixx="9.96620981645399E-06" ixy="-5.23306086487117E-09" ixz="2.55503272044308E-07" iyy="1.10068546473359E-05" iyz="4.40820055073282E-09" izz="6.38513107006194E-06" />
+      </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../../../reference/phonebot_model/3/meshes/r_ankle_pitch_link.STL" />
+        </geometry>
+      <material name="">
+        <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+        </material>
+      </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../../../reference/phonebot_model/3/meshes/r_ankle_pitch_link.STL" />
+        </geometry>
+      </collision>
+    </link>
+  <joint name="r_ankle _pitch_joint" type="revolute">
+    <origin xyz="0 0 -0.1155" rpy="0 0 0" />
+    <parent link="r_hip_calf_link" />
+    <child link="r_ankle_pitch_link" />
+    <axis xyz="0 1 0" />
+    <limit lower="-3.142" upper="3.142" effort="0" velocity="0" />
+    </joint>
+  <link name="r_ankle_roll_link">
+    <inertial>
+      <origin xyz="0.0395 -0.00262871663161335 -0.0261768335109488" rpy="0 0 0" />
+      <mass value="0.168105015619337" />
+      <inertia ixx="5.68510292905988E-05" ixy="-1.55352785745136E-20" ixz="5.14376064415107E-21" iyy="0.000155703689867648" iyz="5.20711296536529E-06" izz="0.000207033359916456" />
+      </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../../../reference/phonebot_model/3/meshes/r_ankle_roll_link.STL" />
+        </geometry>
+      <material name="">
+        <color rgba="1 0.949019607843137 0.898039215686275 1" />
+        </material>
+      </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../../../reference/phonebot_model/3/meshes/r_ankle_roll_link.STL" />
+        </geometry>
+      </collision>
+    </link>
+  <joint name="r_ankle_roll_joint" type="revolute">
+    <origin xyz="-0.03775 0 0" rpy="0 0 0" />
+    <parent link="r_ankle_pitch_link" />
+    <child link="r_ankle_roll_link" />
+    <axis xyz="-1 0 0" />
+    <limit lower="-3.142" upper="3.142" effort="0" velocity="0" />
+    </joint>
+  <link name="l_hip_pitch_link">
+    <inertial>
+      <origin xyz="0.000512585106856032 0.0377609539031015 -0.0116725900125656" rpy="0 0 0" />
+      <mass value="0.0438786463015405" />
+      <inertia ixx="9.966209816454E-06" ixy="5.2330608648565E-09" ixz="-2.55503272044321E-07" iyy="1.10068546473359E-05" iyz="4.40820055066507E-09" izz="6.38513107006194E-06" />
+      </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../../../reference/phonebot_model/3/meshes/l_hip_pitch_link.STL" />
+        </geometry>
+      <material name="">
+        <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+        </material>
+      </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../../../reference/phonebot_model/3/meshes/l_hip_pitch_link.STL" />
+        </geometry>
+      </collision>
+    </link>
+  <joint name="l_hip_pitch_joint" type="revolute">
+    <origin xyz="0 0.11325 -0.209000000000001" rpy="-3.14159265358979 0 -3.14159265358979" />
+    <parent link="base_link" />
+    <child link="l_hip_pitch_link" />
+    <axis xyz="0 -1 0" />
+    <limit lower="-3.142" upper="3.142" effort="0" velocity="0" />
+    </joint>
+  <link name="l_hip_roll_link">
+    <inertial>
+      <origin xyz="-0.0116725900125597 1.09539030993255E-05 -0.0592625851068558" rpy="0 0 0" />
+      <mass value="0.0438786463015405" />
+      <inertia ixx="6.38513107006194E-06" ixy="4.40820055079593E-09" ixz="2.55503272044345E-07" iyy="1.10068546473358E-05" iyz="-5.23306086486742E-09" izz="9.96620981645398E-06" />
+      </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../../../reference/phonebot_model/3/meshes/l_hip_roll_link.STL" />
+        </geometry>
+      <material name="">
+        <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+        </material>
+      </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../../../reference/phonebot_model/3/meshes/l_hip_roll_link.STL" />
+        </geometry>
+      </collision>
+    </link>
+  <joint name="l_hip_roll_joint" type="revolute">
+    <origin xyz="0 0.0377500000000015 0" rpy="0 0 0" />
+    <parent link="l_hip_pitch_link" />
+    <child link="l_hip_roll_link" />
+    <axis xyz="-1 0 0" />
+    <limit lower="-3.142" upper="3.142" effort="0" velocity="0" />
+    </joint>
+  <link name="l_hip_thigh_link">
+    <inertial>
+      <origin xyz="-1.09539031000581E-05 0.000512585106856783 -0.0464225900125635" rpy="0 0 0" />
+      <mass value="0.0438786463015405" />
+      <inertia ixx="1.10068546473358E-05" ixy="-5.23306086487335E-09" ixz="-4.40820055071647E-09" iyy="9.96620981645398E-06" iyz="-2.55503272044307E-07" izz="6.38513107006193E-06" />
+      </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../../../reference/phonebot_model/3/meshes/l_hip_thigh_link.STL" />
+        </geometry>
+      <material name="">
+        <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+        </material>
+      </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../../../reference/phonebot_model/3/meshes/l_hip_thigh_link.STL" />
+        </geometry>
+      </collision>
+    </link>
+  <joint name="l_hip_thigh_joint" type="revolute">
+    <origin xyz="0 0 -0.0587499999999989" rpy="0 0 0" />
+    <parent link="l_hip_roll_link" />
+    <child link="l_hip_thigh_link" />
+    <axis xyz="0 0 1" />
+    <limit lower="-3.142" upper="3.142" effort="0" velocity="0" />
+    </joint>
+  <link name="l_hip_calf_link">
+    <inertial>
+      <origin xyz="1.09539031001142E-05 0.000512585106856728 -0.103827409987437" rpy="0 0 0" />
+      <mass value="0.0438786463015405" />
+      <inertia ixx="1.10068546473359E-05" ixy="5.23306086486915E-09" ixz="-4.4082005507003E-09" iyy="9.96620981645399E-06" iyz="2.55503272044307E-07" izz="6.38513107006194E-06" />
+      </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../../../reference/phonebot_model/3/meshes/l_hip_calf_link.STL" />
+        </geometry>
+      <material name="">
+        <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+        </material>
+      </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../../../reference/phonebot_model/3/meshes/l_hip_calf_link.STL" />
+        </geometry>
+      </collision>
+    </link>
+  <joint name="l_hip_calf_joint" type="revolute">
+    <origin xyz="0 0 -0.03475" rpy="0 0 0" />
+    <parent link="l_hip_thigh_link" />
+    <child link="l_hip_calf_link" />
+    <axis xyz="0 -1 0" />
+    <limit lower="-3.142" upper="3.142" effort="0" velocity="0" />
+    </joint>
+  <link name="l_ankle_pitch_link">
+    <inertial>
+      <origin xyz="-0.0372374148931425 -1.09539031001027E-05 0.0116725900125634" rpy="0 0 0" />
+      <mass value="0.0438786463015405" />
+      <inertia ixx="9.96620981645399E-06" ixy="-5.23306086486585E-09" ixz="2.55503272044308E-07" iyy="1.10068546473359E-05" iyz="4.40820055073203E-09" izz="6.38513107006193E-06" />
+      </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../../../reference/phonebot_model/3/meshes/l_ankle_pitch_link.STL" />
+        </geometry>
+      <material name="">
+        <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+        </material>
+      </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../../../reference/phonebot_model/3/meshes/l_ankle_pitch_link.STL" />
+        </geometry>
+      </collision>
+    </link>
+  <joint name="l_ankle_pitch_joint" type="revolute">
+    <origin xyz="0 0 -0.1155" rpy="0 0 0" />
+    <parent link="l_hip_calf_link" />
+    <child link="l_ankle_pitch_link" />
+    <axis xyz="0 -1 0" />
+    <limit lower="-3.142" upper="3.142" effort="0" velocity="0" />
+    </joint>
+  <link name="l_ankle_roll_link">
+    <inertial>
+      <origin xyz="0.0394999999999984 1.11022302462516E-16 -0.0263084922370927" rpy="0 0 0" />
+      <mass value="0.168105015619337" />
+      <inertia ixx="5.68510292905987E-05" ixy="-1.05069363266892E-18" ixz="-1.05613353193441E-21" iyy="0.000155180783823683" iyz="-8.74678906986671E-21" izz="0.000207556265960421" />
+      </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../../../reference/phonebot_model/3/meshes/l_ankle_roll_link.STL" />
+        </geometry>
+      <material name="">
+        <color rgba="1 0.949019607843137 0.898039215686275 1" />
+        </material>
+      </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../../../reference/phonebot_model/3/meshes/l_ankle_roll_link.STL" />
+        </geometry>
+      </collision>
+    </link>
+  <joint name="l_ankle_roll_joint" type="revolute">
+    <origin xyz="-0.0377499999999995 0 0" rpy="0 0 0" />
+    <parent link="l_ankle_pitch_link" />
+    <child link="l_ankle_roll_link" />
+    <axis xyz="-1 0 0" />
+    <limit lower="-3.142" upper="3.142" effort="0" velocity="0" />
+    </joint>
+  <link name="waist_yaw_link">
+    <inertial>
+      <origin xyz="-2.25280917660021E-16 -1.38777878078145E-17 0.0949999999999975" rpy="0 0 0" />
+      <mass value="0.232848" />
+      <inertia ixx="0.000475398000000001" ixy="3.22593347119457E-19" ixz="-1.77996540349635E-21" iyy="0.000381016944000001" iyz="-3.25493631865524E-21" izz="9.57781440000002E-05" />
+      </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../../../reference/phonebot_model/3/meshes/waist_yaw_link.STL" />
+        </geometry>
+      <material name="">
+        <color rgba="1 0.949019607843137 0.898039215686275 1" />
+        </material>
+      </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../../../reference/phonebot_model/3/meshes/waist_yaw_link.STL" />
+        </geometry>
+      </collision>
+    </link>
+  <joint name="waist_yaw_joint" type="revolute">
+    <origin xyz="0 0.0754999999999976 -0.209000000000003" rpy="-3.14159265358978 0 -3.14159265358979" />
+    <parent link="base_link" />
+    <child link="waist_yaw_link" />
+    <axis xyz="0 0 -1" />
+    <limit lower="-3.142" upper="3.142" effort="0" velocity="0" />
+    </joint>
+  </robot>

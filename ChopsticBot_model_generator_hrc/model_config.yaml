@@ -1,0 +1,116 @@
+version: 1
+
+# All dimensions are in meters. All angles are in radians.
+# URDF `origin.rpy` uses the URDF/ROS convention:
+#   - The stored values are (roll, pitch, yaw) about X, Y, Z respectively.
+#   - The resulting rotation matrix is:
+#       R = Rz(yaw) * Ry(pitch) * Rx(roll)
+#   - When applied to a vector v: v' = R * v, so Rx happens first, then Ry, then Rz.
+#
+# Intrinsic vs extrinsic (two equivalent ways to talk about the SAME R):
+# - Extrinsic (fixed/world axes): rotate about fixed X, then fixed Y, then fixed Z.
+# - Intrinsic (body/local axes): rotate about body Z, then body Y, then body X.
+#
+# The common mistake (what bit us earlier) is to specify a SEQUENCE like:
+#   "rotate about X, then rotate about Z"
+# without stating whether the second rotation is about the FIXED Z axis (extrinsic)
+# or the UPDATED/body Z axis (intrinsic). Those produce different rotations.
+#
+# Symmetry:
+# - You only specify the LEFT leg here.
+# - The generator will create the RIGHT leg by mirroring across the YZ-plane (x -> -x)
+#   using proper rotation mirroring (not just negating some rpy numbers).
+
+robot:
+  name: chopstick_bot
+
+options:
+  # If true, generator may insert intermediate `*_joint_frame` links/bodies when a motor is
+  # configured as "fixed first, joint after motor".
+  #
+  # If false, generator will NOT create any `*_joint_frame` links/bodies and will force the
+  # simple relationship (direct parent -> motor revolute joints).
+  # use_joint_frames: true
+  use_joint_frames: false
+
+  # Per-motor setting (leg):
+  # - false: motor body is on the FIXED side; the downstream body rotates.
+  # - true : joint first, then motor body; motor mesh rotates WITH its own joint.
+  #
+  # You can set these independently for hip_pitch and hip_roll:
+  hip_pitch_motor_rotates_with_joint: false
+  hip_roll_motor_rotates_with_joint: false
+
+  # Backward-compat (optional): if you keep this old key, the generator will use it
+  # as the default for BOTH hip_pitch and hip_roll unless the per-motor keys above override it.
+  # motor_rotates_with_joint: false
+
+assets:
+  motor_stl: /media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/reference/xm430_motor/good_conversion_stl/XL-430_new_coordinate_on_axis.STL
+  motor_mesh_scale: 0.001
+
+components:
+  # Motor physical model (used for inertia + collision box):
+  # XL430 approximate box: x=28.5mm, y=46.5mm, z=34mm, mass=65g
+  # Motor frame origin is not at box center: COM is +12mm in +Y.
+  motor:
+    size_xyz: [0.0285, 0.0465, 0.034]
+    # Motor frame is +12mm in +Y of the box-center frame, so the box center (COM) is -12mm in motor frame.
+    com_offset_xyz: [0.0, -0.012, 0.0]
+    mass_kg: 0.065
+    collision_rgba: [0.0, 0.8, 0.1, 1.0]
+
+  trunk:
+    size_xyz: [0.05, 0.05, 0.05]
+    mass_kg: 0.20
+
+  leg_bar:
+    length_m: 0.20
+    radius_m: 0.005
+    mass_kg: 0.03
+
+left_leg:
+  # hip_pitch motor mount relative to base motor
+  hip_pitch_mount:
+    xyz: [-0.04, 0.0, 0.0]
+    rpy: [0.0, -1.5707963267948966, 0.0]
+
+  # hip_roll motor mount relative to hip_pitch motor (this is applied on the hip_pitch joint origin)
+  hip_roll_mount:
+    # The joint origin from hip_pitch motor -> hip_roll motor.
+    # This replaces the need for a global motor_to_joint_z_m if you want everything explicit.
+    joint_origin_xyz: [0.0, 0.0, 0.04]
+
+    # Equivalent URDF rpy for the previously-used rotation_sequence below.
+    # This rpy yields the same rotation matrix as:
+    #   intrinsic sequence: Rx(-90deg) then Rz(-90deg)
+    rpy: [0.0, -1.5707963267948966, -1.5707963267948966]
+
+    # If you want to think in "rotate X then Z" (sequence form), keep it here for reference.
+    # NOTE: commented out (do not delete) per request.
+    # rotation_sequence:
+    #   - {axis: x, angle: -1.5707963267948966}
+    #   - {axis: z, angle: -1.5707963267948966}
+
+  # bar relative to hip_roll motor output joint
+  bar:
+    # revolute joint from hip_roll motor -> bar link
+    joint_origin_xyz: [0.0, -0.0, 0.0]
+    # joint_origin_xyz: [0.0, 0.0, 0.05]
+    # cylinder geom inside the bar link (so the hinge is at the hip end)
+    geom:
+      # cylinder axis is Z by default; rotate X 90deg so cylinder points along +Y of bar link
+      rpy: [1.5707963267948966, 0.0, 0.0]
+      # place cylinder center at -L/2 so the leg extends toward -Y of the bar link
+      # (this typically points downward given your motor mount conventions)
+      xyz: [0.0, -0.17, 0.0]
+      # xyz: [0.0, -0.075, 0.0]
+
+trunk:
+  box_size_xyz: [0.05, 0.05, 0.05]
+  joint:
+    # base motor -> trunk
+    origin_xyz: [0.0, 0.0, 0.05]
+    origin_rpy: [0.0, 0.0, 0.0]
+    axis_xyz: [0.0, 0.0, 1.0]
+

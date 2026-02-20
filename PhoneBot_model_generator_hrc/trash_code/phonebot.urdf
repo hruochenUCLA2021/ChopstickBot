@@ -1,0 +1,600 @@
+<?xml version='1.0' encoding='utf-8'?>
+<robot name="phonebot">
+  <link name="base_motor_link">
+    <visual>
+      <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <mesh filename="/media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/reference/xm430_motor/good_conversion_stl/XL-430_new_coordinate_on_axis.STL" scale="0.001000 0.001000 0.001000" />
+        </geometry>
+      <material name="motor_gray">
+        <color rgba="0.89804 0.91765 0.92941 1.0" />
+        </material>
+      </visual>
+    <collision>
+      <origin xyz="0.000000 -0.012000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <box size="0.028500 0.046500 0.034000" />
+        </geometry>
+      </collision>
+    <inertial>
+      <origin xyz="0.000000 -0.012000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <mass value="0.065000" />
+      <inertia ixx="0.00001797" ixy="0" ixz="0" iyy="0.00001066" iyz="0" izz="0.00001611" />
+      </inertial>
+    </link>
+  <link name="l_hip_pitch_mount">
+    <inertial>
+      <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <mass value="0.001000" />
+      <inertia ixx="0.00000002" ixy="0" ixz="0" iyy="0.00000002" iyz="0" izz="0.00000002" />
+      </inertial>
+    </link>
+  <joint name="base_to_l_hip_pitch_mount_fixed" type="fixed">
+    <origin xyz="-0.050000 0.000000 0.000000" rpy="0.000000 -1.570796 0.000000" />
+    <parent link="base_motor_link" />
+    <child link="l_hip_pitch_mount" />
+    </joint>
+  <link name="l_hip_pitch">
+    <visual>
+      <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <mesh filename="/media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/reference/xm430_motor/good_conversion_stl/XL-430_new_coordinate_on_axis.STL" scale="0.001000 0.001000 0.001000" />
+        </geometry>
+      <material name="motor_gray">
+        <color rgba="0.89804 0.91765 0.92941 1.0" />
+        </material>
+      </visual>
+    <collision>
+      <origin xyz="0.000000 -0.012000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <box size="0.028500 0.046500 0.034000" />
+        </geometry>
+      </collision>
+    <inertial>
+      <origin xyz="0.000000 -0.012000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <mass value="0.065000" />
+      <inertia ixx="0.00001797" ixy="0" ixz="0" iyy="0.00001066" iyz="0" izz="0.00001611" />
+      </inertial>
+    </link>
+  <joint name="l_hip_pitch_mount_to_motor_fixed" type="fixed">
+    <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
+    <parent link="l_hip_pitch_mount" />
+    <child link="l_hip_pitch" />
+    </joint>
+  <link name="l_hip_roll">
+    <visual>
+      <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <mesh filename="/media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/reference/xm430_motor/good_conversion_stl/XL-430_new_coordinate_on_axis.STL" scale="0.001000 0.001000 0.001000" />
+        </geometry>
+      <material name="motor_gray">
+        <color rgba="0.89804 0.91765 0.92941 1.0" />
+        </material>
+      </visual>
+    <collision>
+      <origin xyz="0.000000 -0.012000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <box size="0.028500 0.046500 0.034000" />
+        </geometry>
+      </collision>
+    <inertial>
+      <origin xyz="0.000000 -0.012000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <mass value="0.065000" />
+      <inertia ixx="0.00001797" ixy="0" ixz="0" iyy="0.00001066" iyz="0" izz="0.00001611" />
+      </inertial>
+    </link>
+  <joint name="l_hip_pitch_joint" type="revolute">
+    <origin xyz="0.000000 0.000000 0.040000" rpy="0.000000 -1.570796 -1.570796" />
+    <parent link="l_hip_pitch" />
+    <child link="l_hip_roll" />
+    <axis xyz="1.000000 0.000000 0.000000" />
+    <limit lower="-3.14159" upper="3.14159" effort="5.0" velocity="8.0" />
+    </joint>
+  <link name="l_hip_roll_joint_frame">
+    <inertial>
+      <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <mass value="0.001000" />
+      <inertia ixx="0.00000002" ixy="0" ixz="0" iyy="0.00000002" iyz="0" izz="0.00000002" />
+      </inertial>
+    </link>
+  <joint name="l_hip_roll_joint" type="revolute">
+    <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
+    <parent link="l_hip_roll" />
+    <child link="l_hip_roll_joint_frame" />
+    <axis xyz="0.000000 0.000000 1.000000" />
+    <limit lower="-3.14159" upper="3.14159" effort="5.0" velocity="8.0" />
+    </joint>
+  <link name="l_hip_thigh">
+    <visual>
+      <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <mesh filename="/media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/reference/xm430_motor/good_conversion_stl/XL-430_new_coordinate_on_axis.STL" scale="0.001000 0.001000 0.001000" />
+        </geometry>
+      <material name="motor_gray">
+        <color rgba="0.89804 0.91765 0.92941 1.0" />
+        </material>
+      </visual>
+    <collision>
+      <origin xyz="0.000000 -0.012000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <box size="0.028500 0.046500 0.034000" />
+        </geometry>
+      </collision>
+    <inertial>
+      <origin xyz="0.000000 -0.012000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <mass value="0.065000" />
+      <inertia ixx="0.00001797" ixy="0" ixz="0" iyy="0.00001066" iyz="0" izz="0.00001611" />
+      </inertial>
+    </link>
+  <link name="l_hip_thigh_joint_frame">
+    <inertial>
+      <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <mass value="0.001000" />
+      <inertia ixx="0.00000002" ixy="0" ixz="0" iyy="0.00000002" iyz="0" izz="0.00000002" />
+      </inertial>
+    </link>
+  <joint name="l_hip_thigh_joint" type="revolute">
+    <origin xyz="0.000000 -0.060000 0.000000" rpy="0.000000 0.000000 0.000000" />
+    <parent link="l_hip_roll_joint_frame" />
+    <child link="l_hip_thigh_joint_frame" />
+    <axis xyz="0.000000 0.000000 1.000000" />
+    <limit lower="-3.14159" upper="3.14159" effort="5.0" velocity="8.0" />
+    </joint>
+  <joint name="l_hip_thigh_joint_frame_to_motor_fixed" type="fixed">
+    <origin xyz="0.000000 0.000000 0.000000" rpy="1.570796 0.000000 0.000000" />
+    <parent link="l_hip_thigh_joint_frame" />
+    <child link="l_hip_thigh" />
+    </joint>
+  <link name="l_hip_calf">
+    <visual>
+      <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <mesh filename="/media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/reference/xm430_motor/good_conversion_stl/XL-430_new_coordinate_on_axis.STL" scale="0.001000 0.001000 0.001000" />
+        </geometry>
+      <material name="motor_gray">
+        <color rgba="0.89804 0.91765 0.92941 1.0" />
+        </material>
+      </visual>
+    <collision>
+      <origin xyz="0.000000 -0.012000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <box size="0.028500 0.046500 0.034000" />
+        </geometry>
+      </collision>
+    <inertial>
+      <origin xyz="0.000000 -0.012000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <mass value="0.065000" />
+      <inertia ixx="0.00001797" ixy="0" ixz="0" iyy="0.00001066" iyz="0" izz="0.00001611" />
+      </inertial>
+    </link>
+  <link name="l_hip_calf_joint_frame">
+    <inertial>
+      <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <mass value="0.001000" />
+      <inertia ixx="0.00000002" ixy="0" ixz="0" iyy="0.00000002" iyz="0" izz="0.00000002" />
+      </inertial>
+    </link>
+  <joint name="l_hip_calf_joint" type="revolute">
+    <origin xyz="0.000000 0.000000 0.040000" rpy="0.000000 0.000000 0.000000" />
+    <parent link="l_hip_thigh" />
+    <child link="l_hip_calf_joint_frame" />
+    <axis xyz="0.000000 0.000000 1.000000" />
+    <limit lower="-3.14159" upper="3.14159" effort="5.0" velocity="8.0" />
+    </joint>
+  <joint name="l_hip_calf_joint_frame_to_motor_fixed" type="fixed">
+    <origin xyz="0.000000 0.000000 0.000000" rpy="-1.570796 0.000000 -1.570796" />
+    <parent link="l_hip_calf_joint_frame" />
+    <child link="l_hip_calf" />
+    </joint>
+  <link name="l_ankle_pitch">
+    <visual>
+      <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <mesh filename="/media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/reference/xm430_motor/good_conversion_stl/XL-430_new_coordinate_on_axis.STL" scale="0.001000 0.001000 0.001000" />
+        </geometry>
+      <material name="motor_gray">
+        <color rgba="0.89804 0.91765 0.92941 1.0" />
+        </material>
+      </visual>
+    <collision>
+      <origin xyz="0.000000 -0.012000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <box size="0.028500 0.046500 0.034000" />
+        </geometry>
+      </collision>
+    <inertial>
+      <origin xyz="0.000000 -0.012000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <mass value="0.065000" />
+      <inertia ixx="0.00001797" ixy="0" ixz="0" iyy="0.00001066" iyz="0" izz="0.00001611" />
+      </inertial>
+    </link>
+  <link name="l_ankle_pitch_joint_frame">
+    <inertial>
+      <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <mass value="0.001000" />
+      <inertia ixx="0.00000002" ixy="0" ixz="0" iyy="0.00000002" iyz="0" izz="0.00000002" />
+      </inertial>
+    </link>
+  <joint name="l_ankle_pitch_joint" type="revolute">
+    <origin xyz="0.000000 -0.100000 0.000000" rpy="0.000000 0.000000 0.000000" />
+    <parent link="l_hip_calf" />
+    <child link="l_ankle_pitch_joint_frame" />
+    <axis xyz="0.000000 0.000000 1.000000" />
+    <limit lower="-3.14159" upper="3.14159" effort="5.0" velocity="8.0" />
+    </joint>
+  <joint name="l_ankle_pitch_joint_frame_to_motor_fixed" type="fixed">
+    <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 3.141593" />
+    <parent link="l_ankle_pitch_joint_frame" />
+    <child link="l_ankle_pitch" />
+    </joint>
+  <link name="l_ankle_roll">
+    <visual>
+      <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <mesh filename="/media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/reference/xm430_motor/good_conversion_stl/XL-430_new_coordinate_on_axis.STL" scale="0.001000 0.001000 0.001000" />
+        </geometry>
+      <material name="motor_gray">
+        <color rgba="0.89804 0.91765 0.92941 1.0" />
+        </material>
+      </visual>
+    <collision>
+      <origin xyz="0.000000 -0.012000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <box size="0.028500 0.046500 0.034000" />
+        </geometry>
+      </collision>
+    <inertial>
+      <origin xyz="0.000000 -0.012000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <mass value="0.065000" />
+      <inertia ixx="0.00001797" ixy="0" ixz="0" iyy="0.00001066" iyz="0" izz="0.00001611" />
+      </inertial>
+    </link>
+  <link name="l_ankle_roll_joint_frame">
+    <inertial>
+      <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <mass value="0.001000" />
+      <inertia ixx="0.00000002" ixy="0" ixz="0" iyy="0.00000002" iyz="0" izz="0.00000002" />
+      </inertial>
+    </link>
+  <joint name="l_ankle_roll_joint" type="revolute">
+    <origin xyz="-0.040000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
+    <parent link="l_ankle_pitch" />
+    <child link="l_ankle_roll_joint_frame" />
+    <axis xyz="0.000000 0.000000 1.000000" />
+    <limit lower="-3.14159" upper="3.14159" effort="5.0" velocity="8.0" />
+    </joint>
+  <joint name="l_ankle_roll_joint_frame_to_motor_fixed" type="fixed">
+    <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 1.570796 0.000000" />
+    <parent link="l_ankle_roll_joint_frame" />
+    <child link="l_ankle_roll" />
+    </joint>
+  <link name="l_foot">
+    <visual>
+      <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <box size="0.100000 0.060000 0.010000" />
+        </geometry>
+      <material name="trunk_gray">
+        <color rgba="0.89804 0.91765 0.92941 1.0" />
+        </material>
+      </visual>
+    <collision>
+      <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <box size="0.100000 0.060000 0.010000" />
+        </geometry>
+      </collision>
+    <inertial>
+      <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <mass value="0.050000" />
+      <inertia ixx="0.00001542" ixy="0" ixz="0" iyy="0.00004208" iyz="0" izz="0.00005667" />
+      </inertial>
+    </link>
+  <joint name="l_ankle_roll_to_l_foot_fixed" type="fixed">
+    <origin xyz="0.000000 0.035000 0.040000" rpy="1.570796 -1.570796 0.000000" />
+    <parent link="l_ankle_roll" />
+    <child link="l_foot" />
+    </joint>
+  <link name="r_hip_pitch_mount">
+    <inertial>
+      <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <mass value="0.001000" />
+      <inertia ixx="0.00000002" ixy="0" ixz="0" iyy="0.00000002" iyz="0" izz="0.00000002" />
+      </inertial>
+    </link>
+  <joint name="base_to_r_hip_pitch_mount_fixed" type="fixed">
+    <origin xyz="0.050000 0.000000 0.000000" rpy="0.000000 1.570796 -0.000000" />
+    <parent link="base_motor_link" />
+    <child link="r_hip_pitch_mount" />
+    </joint>
+  <link name="r_hip_pitch">
+    <visual>
+      <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <mesh filename="/media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/reference/xm430_motor/good_conversion_stl/XL-430_new_coordinate_on_axis.STL" scale="0.001000 0.001000 0.001000" />
+        </geometry>
+      <material name="motor_gray">
+        <color rgba="0.89804 0.91765 0.92941 1.0" />
+        </material>
+      </visual>
+    <collision>
+      <origin xyz="0.000000 -0.012000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <box size="0.028500 0.046500 0.034000" />
+        </geometry>
+      </collision>
+    <inertial>
+      <origin xyz="0.000000 -0.012000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <mass value="0.065000" />
+      <inertia ixx="0.00001797" ixy="0" ixz="0" iyy="0.00001066" iyz="0" izz="0.00001611" />
+      </inertial>
+    </link>
+  <joint name="r_hip_pitch_mount_to_motor_fixed" type="fixed">
+    <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
+    <parent link="r_hip_pitch_mount" />
+    <child link="r_hip_pitch" />
+    </joint>
+  <link name="r_hip_roll">
+    <visual>
+      <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <mesh filename="/media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/reference/xm430_motor/good_conversion_stl/XL-430_new_coordinate_on_axis.STL" scale="0.001000 0.001000 0.001000" />
+        </geometry>
+      <material name="motor_gray">
+        <color rgba="0.89804 0.91765 0.92941 1.0" />
+        </material>
+      </visual>
+    <collision>
+      <origin xyz="0.000000 -0.012000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <box size="0.028500 0.046500 0.034000" />
+        </geometry>
+      </collision>
+    <inertial>
+      <origin xyz="0.000000 -0.012000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <mass value="0.065000" />
+      <inertia ixx="0.00001797" ixy="0" ixz="0" iyy="0.00001066" iyz="0" izz="0.00001611" />
+      </inertial>
+    </link>
+  <joint name="r_hip_pitch_joint" type="revolute">
+    <origin xyz="-0.000000 0.000000 0.040000" rpy="0.000000 1.570796 1.570796" />
+    <parent link="r_hip_pitch" />
+    <child link="r_hip_roll" />
+    <axis xyz="-1.000000 0.000000 0.000000" />
+    <limit lower="-3.14159" upper="3.14159" effort="5.0" velocity="8.0" />
+    </joint>
+  <link name="r_hip_roll_joint_frame">
+    <inertial>
+      <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <mass value="0.001000" />
+      <inertia ixx="0.00000002" ixy="0" ixz="0" iyy="0.00000002" iyz="0" izz="0.00000002" />
+      </inertial>
+    </link>
+  <joint name="r_hip_roll_joint" type="revolute">
+    <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
+    <parent link="r_hip_roll" />
+    <child link="r_hip_roll_joint_frame" />
+    <axis xyz="0.000000 0.000000 1.000000" />
+    <limit lower="-3.14159" upper="3.14159" effort="5.0" velocity="8.0" />
+    </joint>
+  <link name="r_hip_thigh">
+    <visual>
+      <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <mesh filename="/media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/reference/xm430_motor/good_conversion_stl/XL-430_new_coordinate_on_axis.STL" scale="0.001000 0.001000 0.001000" />
+        </geometry>
+      <material name="motor_gray">
+        <color rgba="0.89804 0.91765 0.92941 1.0" />
+        </material>
+      </visual>
+    <collision>
+      <origin xyz="0.000000 -0.012000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <box size="0.028500 0.046500 0.034000" />
+        </geometry>
+      </collision>
+    <inertial>
+      <origin xyz="0.000000 -0.012000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <mass value="0.065000" />
+      <inertia ixx="0.00001797" ixy="0" ixz="0" iyy="0.00001066" iyz="0" izz="0.00001611" />
+      </inertial>
+    </link>
+  <link name="r_hip_thigh_joint_frame">
+    <inertial>
+      <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <mass value="0.001000" />
+      <inertia ixx="0.00000002" ixy="0" ixz="0" iyy="0.00000002" iyz="0" izz="0.00000002" />
+      </inertial>
+    </link>
+  <joint name="r_hip_thigh_joint" type="revolute">
+    <origin xyz="-0.000000 -0.060000 0.000000" rpy="0.000000 0.000000 0.000000" />
+    <parent link="r_hip_roll_joint_frame" />
+    <child link="r_hip_thigh_joint_frame" />
+    <axis xyz="0.000000 0.000000 1.000000" />
+    <limit lower="-3.14159" upper="3.14159" effort="5.0" velocity="8.0" />
+    </joint>
+  <joint name="r_hip_thigh_joint_frame_to_motor_fixed" type="fixed">
+    <origin xyz="-0.000000 0.000000 0.000000" rpy="1.570796 -0.000000 0.000000" />
+    <parent link="r_hip_thigh_joint_frame" />
+    <child link="r_hip_thigh" />
+    </joint>
+  <link name="r_hip_calf">
+    <visual>
+      <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <mesh filename="/media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/reference/xm430_motor/good_conversion_stl/XL-430_new_coordinate_on_axis.STL" scale="0.001000 0.001000 0.001000" />
+        </geometry>
+      <material name="motor_gray">
+        <color rgba="0.89804 0.91765 0.92941 1.0" />
+        </material>
+      </visual>
+    <collision>
+      <origin xyz="0.000000 -0.012000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <box size="0.028500 0.046500 0.034000" />
+        </geometry>
+      </collision>
+    <inertial>
+      <origin xyz="0.000000 -0.012000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <mass value="0.065000" />
+      <inertia ixx="0.00001797" ixy="0" ixz="0" iyy="0.00001066" iyz="0" izz="0.00001611" />
+      </inertial>
+    </link>
+  <link name="r_hip_calf_joint_frame">
+    <inertial>
+      <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <mass value="0.001000" />
+      <inertia ixx="0.00000002" ixy="0" ixz="0" iyy="0.00000002" iyz="0" izz="0.00000002" />
+      </inertial>
+    </link>
+  <joint name="r_hip_calf_joint" type="revolute">
+    <origin xyz="-0.000000 0.000000 0.040000" rpy="0.000000 0.000000 0.000000" />
+    <parent link="r_hip_thigh" />
+    <child link="r_hip_calf_joint_frame" />
+    <axis xyz="0.000000 0.000000 1.000000" />
+    <limit lower="-3.14159" upper="3.14159" effort="5.0" velocity="8.0" />
+    </joint>
+  <joint name="r_hip_calf_joint_frame_to_motor_fixed" type="fixed">
+    <origin xyz="-0.000000 0.000000 0.000000" rpy="-1.570796 -0.000000 1.570796" />
+    <parent link="r_hip_calf_joint_frame" />
+    <child link="r_hip_calf" />
+    </joint>
+  <link name="r_ankle_pitch">
+    <visual>
+      <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <mesh filename="/media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/reference/xm430_motor/good_conversion_stl/XL-430_new_coordinate_on_axis.STL" scale="0.001000 0.001000 0.001000" />
+        </geometry>
+      <material name="motor_gray">
+        <color rgba="0.89804 0.91765 0.92941 1.0" />
+        </material>
+      </visual>
+    <collision>
+      <origin xyz="0.000000 -0.012000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <box size="0.028500 0.046500 0.034000" />
+        </geometry>
+      </collision>
+    <inertial>
+      <origin xyz="0.000000 -0.012000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <mass value="0.065000" />
+      <inertia ixx="0.00001797" ixy="0" ixz="0" iyy="0.00001066" iyz="0" izz="0.00001611" />
+      </inertial>
+    </link>
+  <link name="r_ankle_pitch_joint_frame">
+    <inertial>
+      <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <mass value="0.001000" />
+      <inertia ixx="0.00000002" ixy="0" ixz="0" iyy="0.00000002" iyz="0" izz="0.00000002" />
+      </inertial>
+    </link>
+  <joint name="r_ankle_pitch_joint" type="revolute">
+    <origin xyz="-0.000000 -0.100000 0.000000" rpy="0.000000 0.000000 0.000000" />
+    <parent link="r_hip_calf" />
+    <child link="r_ankle_pitch_joint_frame" />
+    <axis xyz="0.000000 0.000000 1.000000" />
+    <limit lower="-3.14159" upper="3.14159" effort="5.0" velocity="8.0" />
+    </joint>
+  <joint name="r_ankle_pitch_joint_frame_to_motor_fixed" type="fixed">
+    <origin xyz="-0.000000 0.000000 0.000000" rpy="0.000000 -0.000000 -3.141593" />
+    <parent link="r_ankle_pitch_joint_frame" />
+    <child link="r_ankle_pitch" />
+    </joint>
+  <link name="r_ankle_roll">
+    <visual>
+      <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <mesh filename="/media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/reference/xm430_motor/good_conversion_stl/XL-430_new_coordinate_on_axis.STL" scale="0.001000 0.001000 0.001000" />
+        </geometry>
+      <material name="motor_gray">
+        <color rgba="0.89804 0.91765 0.92941 1.0" />
+        </material>
+      </visual>
+    <collision>
+      <origin xyz="0.000000 -0.012000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <box size="0.028500 0.046500 0.034000" />
+        </geometry>
+      </collision>
+    <inertial>
+      <origin xyz="0.000000 -0.012000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <mass value="0.065000" />
+      <inertia ixx="0.00001797" ixy="0" ixz="0" iyy="0.00001066" iyz="0" izz="0.00001611" />
+      </inertial>
+    </link>
+  <link name="r_ankle_roll_joint_frame">
+    <inertial>
+      <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <mass value="0.001000" />
+      <inertia ixx="0.00000002" ixy="0" ixz="0" iyy="0.00000002" iyz="0" izz="0.00000002" />
+      </inertial>
+    </link>
+  <joint name="r_ankle_roll_joint" type="revolute">
+    <origin xyz="0.040000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
+    <parent link="r_ankle_pitch" />
+    <child link="r_ankle_roll_joint_frame" />
+    <axis xyz="0.000000 0.000000 1.000000" />
+    <limit lower="-3.14159" upper="3.14159" effort="5.0" velocity="8.0" />
+    </joint>
+  <joint name="r_ankle_roll_joint_frame_to_motor_fixed" type="fixed">
+    <origin xyz="-0.000000 0.000000 0.000000" rpy="0.000000 -1.570796 -0.000000" />
+    <parent link="r_ankle_roll_joint_frame" />
+    <child link="r_ankle_roll" />
+    </joint>
+  <link name="r_foot">
+    <visual>
+      <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <box size="0.100000 0.060000 0.010000" />
+        </geometry>
+      <material name="trunk_gray">
+        <color rgba="0.89804 0.91765 0.92941 1.0" />
+        </material>
+      </visual>
+    <collision>
+      <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <box size="0.100000 0.060000 0.010000" />
+        </geometry>
+      </collision>
+    <inertial>
+      <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <mass value="0.050000" />
+      <inertia ixx="0.00001542" ixy="0" ixz="0" iyy="0.00004208" iyz="0" izz="0.00005667" />
+      </inertial>
+    </link>
+  <joint name="r_ankle_roll_to_r_foot_fixed" type="fixed">
+    <origin xyz="-0.000000 0.035000 0.040000" rpy="0.000000 1.570796 -1.570796" />
+    <parent link="r_ankle_roll" />
+    <child link="r_foot" />
+    </joint>
+  <link name="trunk_link">
+    <visual>
+      <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <box size="0.070000 0.010000 0.150000" />
+        </geometry>
+      <material name="trunk_gray">
+        <color rgba="0.89804 0.91765 0.92941 1.0" />
+        </material>
+      </visual>
+    <collision>
+      <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <box size="0.070000 0.010000 0.150000" />
+        </geometry>
+      </collision>
+    <inertial>
+      <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <mass value="0.300000" />
+      <inertia ixx="0.00056500" ixy="0" ixz="0" iyy="0.00068500" iyz="0" izz="0.00012500" />
+      </inertial>
+    </link>
+  <joint name="base_to_trunk" type="revolute">
+    <origin xyz="0.000000 0.000000 0.110000" rpy="0.000000 0.000000 0.000000" />
+    <parent link="base_motor_link" />
+    <child link="trunk_link" />
+    <axis xyz="0.000000 0.000000 1.000000" />
+    <limit lower="-3.14159" upper="3.14159" effort="5.0" velocity="8.0" />
+    </joint>
+  </robot>

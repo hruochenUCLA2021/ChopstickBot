@@ -1,0 +1,73 @@
+version: 1
+
+robot:
+  name: generic_bot_minimal
+
+options:
+  floating_base: true
+  # If true, create small-inertia helper bodies for motor outputs (needed for joint-after-motor topology).
+  use_joint_frames: true
+
+assets:
+  motor_stl: /media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/reference/xm430_motor/good_conversion_stl/XL-430_new_coordinate_on_axis.STL
+  motor_mesh_scale: 0.001
+
+components:
+  motor:
+    mass_kg: 0.065
+    size_xyz: [0.0285, 0.0465, 0.034]
+    com_offset_xyz: [0.0, -0.012, 0.0]
+    visual_rgba: [0.89804, 0.91765, 0.92941, 1.0]
+    collision_rgba: [0.0, 0.8, 0.1, 1.0]
+    # Default motor shaft axis in motor frame
+    joint_axis_xyz: [0.0, 0.0, 1.0]
+
+  frame:
+    mass_kg: 0.001
+    size_xyz: [0.01, 0.01, 0.01]
+
+  trunk:
+    mass_kg: 0.30
+    size_xyz: [0.07, 0.01, 0.15]
+    visual_rgba: [0.7, 0.7, 0.7, 1.0]
+    # Optional: if the trunk frame origin is not at its box center/COM
+    com_offset_xyz: [0.0, 0.0, 0.0]
+    geom_offset_xyz: [0.0, 0.0, 0.0]
+
+  end_effector:
+    # End-effector visual/collision and inertial
+    mass_kg: 0.05
+    visual_rgba: [0.7, 0.7, 0.7, 1.0]
+    # Optional: if the end-effector frame origin is not at its geometry center/COM
+    com_offset_xyz: [0.0, 0.0, 0.0]
+    geom_offset_xyz: [0.0, 0.0, 0.0]
+    shape:
+      type: box
+      size_xyz: [0.10, 0.06, 0.01]
+
+# Trunk attaches as the 3rd branch from the base (after legs are emitted in XML order).
+trunk:
+  mount:
+    xyz: [0.0, 0.0, 0.11]
+    rpy: [0.0, 0.0, 0.0]
+  joint:
+    name: base_to_trunk
+    type: hinge
+    axis_xyz: [0.0, 0.0, 1.0]
+
+left_leg:
+  # Minimal leg: just ONE motor stage (append more motors; generator treats them all identically)
+  motors:
+    - name: leg_motor
+      # Base -> motor pose
+      xyz: [-0.05, 0.0, 0.0]
+      rpy: [0.0, -1.5707963267948966, 0.0]
+      rotates_with_joint: false
+      # axis in motor frame (optional)
+      # joint_axis_xyz: [0.0, 0.0, 1.0]
+
+  end_effector:
+    xyz: [0.0, 0.0, 0.06]
+    rpy: [0.0, 0.0, 0.0]
+
+

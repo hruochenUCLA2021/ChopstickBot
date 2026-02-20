@@ -1,0 +1,37 @@
+version: 1
+
+# Convert a URDF to MJCF (MuJoCo XML) using `urdf2mjcf`.
+#
+# This repo's Phonebot URDF uses ROS-style mesh URIs like:
+#   package://3/meshes/base_link.STL
+# MuJoCo can't resolve `package://...`, so we preprocess the URDF to rewrite those
+# to filesystem-relative paths (e.g. ../meshes/base_link.STL) before conversion.
+
+input_urdf: /media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/reference/phonebot_model/3/urdf/3.urdf
+
+output:
+  # Directory where outputs will be written.
+  out_dir: /media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/ChopstickBot/model_converter/out
+  # Output MJCF filename
+  mjcf_name: phonebot3.xml
+  # Also write the preprocessed URDF for debugging
+  resolved_urdf_name: phonebot3_resolved.urdf
+  # Optional: write a URDF that points to the locally-copied meshes (out/meshes)
+  local_urdf_name: phonebot3_local.urdf
+
+package_map:
+  # Map ROS package name -> package root directory on disk
+  "3": /media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/reference/phonebot_model/3
+
+convert:
+  # If true, urdf2mjcf copies mesh assets into <out_dir>/meshes/
+  copy_meshes: true
+
+postprocess:
+  # MuJoCo 3.x does not accept `scale` on <geom>; it must be on <asset><mesh>.
+  fix_geom_mesh_scale: true
+  # Optional: make collision material not red.
+  fix_collision_colors_to_grey: true
+  # If meshes are copied to out/meshes, rewrite MJCF (and emit a local URDF) to reference them.
+  use_local_copied_meshes: true
+
