@@ -13,9 +13,9 @@ output:
 options:
   floating_base: true
   # Match ChopsticBot config default: no extra joint-frame inertia bodies.
-  use_joint_frames: false
+  use_joint_frames: true
   # Keep sensors off for this config by default (can turn on when needed).
-  add_sensors: false
+  add_sensors: true
 
 sensors:
   imu_site:

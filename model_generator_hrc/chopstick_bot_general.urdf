@@ -44,7 +44,13 @@
       <inertia ixx="0.000017973854" ixy="0" ixz="0" iyy="0.000010661354" iyz="0" izz="0.000016111875" />
       </inertial>
     </link>
-  <link name="l_hip_pitch_out" />
+  <link name="l_hip_pitch_out">
+    <inertial>
+      <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <mass value="0.001000" />
+      <inertia ixx="0.000000016667" ixy="0" ixz="0" iyy="0.000000016667" iyz="0" izz="0.000000016667" />
+      </inertial>
+    </link>
   <joint name="l_hip_pitch_mount_fixed" type="fixed">
     <origin xyz="-0.040000 0.000000 0.000000" rpy="0.000000 -1.570796 0.000000" />
     <parent link="base_motor_link" />
@@ -79,7 +85,13 @@
       <inertia ixx="0.000017973854" ixy="0" ixz="0" iyy="0.000010661354" iyz="0" izz="0.000016111875" />
       </inertial>
     </link>
-  <link name="l_hip_roll_out" />
+  <link name="l_hip_roll_out">
+    <inertial>
+      <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <mass value="0.001000" />
+      <inertia ixx="0.000000016667" ixy="0" ixz="0" iyy="0.000000016667" iyz="0" izz="0.000000016667" />
+      </inertial>
+    </link>
   <joint name="l_hip_roll_mount_fixed" type="fixed">
     <origin xyz="0.000000 0.000000 0.040000" rpy="0.000000 -1.570796 -1.570796" />
     <parent link="l_hip_pitch_out" />
@@ -141,7 +153,13 @@
       <inertia ixx="0.000017973854" ixy="0" ixz="0" iyy="0.000010661354" iyz="0" izz="0.000016111875" />
       </inertial>
     </link>
-  <link name="r_hip_pitch_out" />
+  <link name="r_hip_pitch_out">
+    <inertial>
+      <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <mass value="0.001000" />
+      <inertia ixx="0.000000016667" ixy="0" ixz="0" iyy="0.000000016667" iyz="0" izz="0.000000016667" />
+      </inertial>
+    </link>
   <joint name="r_hip_pitch_mount_fixed" type="fixed">
     <origin xyz="0.040000 0.000000 0.000000" rpy="0.000000 1.570796 -0.000000" />
     <parent link="base_motor_link" />
@@ -176,7 +194,13 @@
       <inertia ixx="0.000017973854" ixy="0" ixz="0" iyy="0.000010661354" iyz="0" izz="0.000016111875" />
       </inertial>
     </link>
-  <link name="r_hip_roll_out" />
+  <link name="r_hip_roll_out">
+    <inertial>
+      <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <mass value="0.001000" />
+      <inertia ixx="0.000000016667" ixy="0" ixz="0" iyy="0.000000016667" iyz="0" izz="0.000000016667" />
+      </inertial>
+    </link>
   <joint name="r_hip_roll_mount_fixed" type="fixed">
     <origin xyz="-0.000000 0.000000 0.040000" rpy="0.000000 1.570796 1.570796" />
     <parent link="r_hip_pitch_out" />

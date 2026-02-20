@@ -493,6 +493,7 @@ def build_mjcf(cfg: dict) -> ET.ElementTree:
         # Site on end-effector for foot sensors (name matches HERMES conventions)
         if add_sensors:
             site_name = left_ee_site_name if prefix == "l" else right_ee_site_name
+            # Site frame matches the end-effector body frame.
             ET.SubElement(ee_body, "site", name=site_name, pos=fmt_xyz(0.0, 0.0, 0.0), quat=fmt_quat_wxyz((1.0, 0.0, 0.0, 0.0)))
 
     world = ET.SubElement(mj, "worldbody")
