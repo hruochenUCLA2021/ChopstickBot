@@ -53,6 +53,278 @@ def load_config(path: Path) -> dict:
     return data
 
 
+def _cfg_base_pose(cfg: dict) -> tuple[tuple[float, float, float], tuple[float, float, float]]:
+    """Return (xyz, rpy) for the base pose (used by URDF, MJCF, and scene keyframes)."""
+    opts = cfg.get("options", {}) or {}
+    bp = opts.get("base_pose", {}) or {}
+    xyz = as_vec3(bp.get("xyz", (0.0, 0.0, 0.30)))
+    rpy = as_vec3(bp.get("rpy", (0.0, 0.0, 0.0)))
+    return xyz, rpy
+
+
+def _count_hinge_joints(cfg: dict) -> int:
+    """Heuristic: one hinge per motor per side + one trunk hinge."""
+    n_mot = int(len(((cfg.get("left_leg", {}) or {}).get("motors", []) or [])))
+    return 2 * n_mot + 1
+
+
+def _count_actuators(cfg: dict) -> int:
+    opts = cfg.get("options", {}) or {}
+    if not bool(opts.get("add_actuators", True)):
+        return 0
+    return _count_hinge_joints(cfg)
+
+
+def _scene_keyframe_block(lines: list[str], *, indent: str = "    ") -> str:
+    # MuJoCo supports multi-line attribute values (qpos/ctrl). This formats them
+    # in the same style as the hand-edited scenes in the training repo.
+    return "\n" + "\n".join(f"{indent}{ln}" for ln in lines) + "\n"
+
+
+def _joint_passive_cfg(cfg: dict) -> dict:
+    """Joint passive stabilization config."""
+    opts = cfg.get("options", {}) or {}
+    jp_cfg = (opts.get("joint_passive", {}) or {}) if isinstance(opts.get("joint_passive", {}), dict) else {}
+    enable = bool(jp_cfg.get("enable", True))
+    default = jp_cfg.get("default", {}) or {}
+    out = {
+        "enable": enable,
+        "default": {
+            "damping": float(default.get("damping", 0.01)),
+            "frictionloss": float(default.get("frictionloss", 0.01)),
+            "armature": float(default.get("armature", 0.02)),
+        },
+        "leg": jp_cfg.get("leg"),
+        "trunk": jp_cfg.get("trunk"),
+    }
+    return out
+
+
+def _joint_passive_attrs_for_leg(cfg: dict, *, motor_index: int, motor_cfg: dict) -> dict[str, str]:
+    jp_cfg = _joint_passive_cfg(cfg)
+    if not jp_cfg["enable"]:
+        return {}
+
+    # Per-motor override in motor list entry (optional).
+    per = motor_cfg.get("joint_passive")
+    if per is None:
+        leg_list = jp_cfg.get("leg")
+        if isinstance(leg_list, (list, tuple)) and motor_index < len(leg_list):
+            per = leg_list[motor_index]
+    if per is None:
+        per = jp_cfg["default"]
+
+    if not isinstance(per, dict):
+        raise ValueError("joint_passive entries must be dicts with damping/frictionloss/armature")
+
+    return {
+        "damping": f"{float(per.get('damping', jp_cfg['default']['damping'])):g}",
+        "frictionloss": f"{float(per.get('frictionloss', jp_cfg['default']['frictionloss'])):g}",
+        "armature": f"{float(per.get('armature', jp_cfg['default']['armature'])):g}",
+    }
+
+
+def _joint_passive_attrs_for_trunk(cfg: dict) -> dict[str, str]:
+    jp_cfg = _joint_passive_cfg(cfg)
+    if not jp_cfg["enable"]:
+        return {}
+    per = jp_cfg.get("trunk")
+    if per is None:
+        per = jp_cfg["default"]
+    if not isinstance(per, dict):
+        raise ValueError("joint_passive.trunk must be a dict with damping/frictionloss/armature")
+    return {
+        "damping": f"{float(per.get('damping', jp_cfg['default']['damping'])):g}",
+        "frictionloss": f"{float(per.get('frictionloss', jp_cfg['default']['frictionloss'])):g}",
+        "armature": f"{float(per.get('armature', jp_cfg['default']['armature'])):g}",
+    }
+
+
+def _fmt_scene_num(x: float) -> str:
+    # Human-friendly formatting for scene keyframes.
+    if abs(x - round(x)) < 1e-12:
+        return str(int(round(x)))
+    s = f"{float(x):.6f}".rstrip("0").rstrip(".")
+    return s if s else "0"
+
+
+def _scene_keyframe_vectors(cfg: dict) -> tuple[list[float], list[float]]:
+    """Return (joint_qpos, ctrl) vectors for scene keyframe."""
+    scenes = cfg.get("scenes", {}) or {}
+    key_cfg = scenes.get("keyframe", {}) or {}
+    n_qj = _count_hinge_joints(cfg)
+    n_ctrl = _count_actuators(cfg)
+
+    joint_qpos = key_cfg.get("joint_qpos")
+    if joint_qpos is None:
+        joint_qpos_list = [0.0] * n_qj
+    else:
+        joint_qpos_list = [float(x) for x in (joint_qpos or [])]
+        if len(joint_qpos_list) != n_qj:
+            raise ValueError(f"scenes.keyframe.joint_qpos must have length {n_qj}, got {len(joint_qpos_list)}")
+
+    ctrl = key_cfg.get("ctrl")
+    if ctrl is None:
+        ctrl_list = [0.0] * n_ctrl
+    else:
+        ctrl_list = [float(x) for x in (ctrl or [])]
+        if len(ctrl_list) != n_ctrl:
+            raise ValueError(f"scenes.keyframe.ctrl must have length {n_ctrl}, got {len(ctrl_list)}")
+
+    return joint_qpos_list, ctrl_list
+
+
+def render_scene_flat_xml(cfg: dict, *, include_file: str) -> str:
+    """Generate a joystick flat-terrain scene XML matching the training repo style."""
+    scenes = cfg.get("scenes", {}) or {}
+    flat = scenes.get("flat", {}) or {}
+    key_cfg = scenes.get("keyframe", {}) or {}
+    key_name = str(key_cfg.get("name", "home"))
+    floating_base = bool((cfg.get("options", {}) or {}).get("floating_base", True))
+
+    joint_qpos_list, ctrl_list = _scene_keyframe_vectors(cfg)
+
+    base_xyz, base_rpy = _cfg_base_pose(cfg)
+    base_q = quat_from_R(R_from_rpy(*base_rpy))
+
+    qpos_lines: list[str] = []
+    if floating_base:
+        qpos_lines.append(f"{_fmt_scene_num(base_xyz[0])} {_fmt_scene_num(base_xyz[1])} {_fmt_scene_num(base_xyz[2])}")
+        qpos_lines.append(f"{_fmt_scene_num(base_q[0])} {_fmt_scene_num(base_q[1])} {_fmt_scene_num(base_q[2])} {_fmt_scene_num(base_q[3])}")
+    qpos_lines.append(" ".join(_fmt_scene_num(x) for x in joint_qpos_list))
+    ctrl_lines = [" ".join(_fmt_scene_num(x) for x in ctrl_list)] if len(ctrl_list) > 0 else []
+
+    model_name = str(flat.get("model_name", "scene"))
+    lines: list[str] = []
+    lines.append(f'<mujoco model="{model_name}">')
+    lines.append(f'  <include file="{include_file}"/>')
+    lines.append("")
+    lines.append("     <!-- setup scene -->")
+    lines.append('  <statistic extent="0.8" center="0 0 0.5"/>')
+    lines.append('  <!-- <statistic meansize="0.144785" extent="1.23314" center="0.025392 2.0634e-05 -0.245975"/> -->')
+    lines.append("  <visual>")
+    lines.append('    <headlight diffuse="0.6 0.6 0.6" ambient="0.3 0.3 0.3" specular="0 0 0"/>')
+    lines.append('    <rgba haze="0.15 0.25 0.35 1"/>')
+    lines.append('    <global azimuth="120" elevation="-20"/>')
+    lines.append("  </visual>")
+    lines.append("")
+    lines.append("  <asset>")
+    lines.append('    <texture type="skybox" builtin="gradient" rgb1="0.3 0.5 0.7" rgb2="0 0 0" width="512" height="3072"/>')
+    lines.append('    <texture type="2d" name="groundplane" builtin="checker" mark="edge" rgb1="0.2 0.3 0.4" rgb2="0.1 0.2 0.3"')
+    lines.append('      markrgb="0.8 0.8 0.8" width="300" height="300"/>')
+    lines.append('    <material name="groundplane" texture="groundplane" texuniform="true" texrepeat="5 5" reflectance="0.2"/>')
+    lines.append("  </asset>")
+    lines.append("")
+    lines.append("  <worldbody>")
+    lines.append('    <light pos="0 0 1.5" dir="0 0 -1" directional="true"/>')
+    lines.append("    <!-- Explicitly set floor sliding friction to 1.0 (MuJoCo default). -->")
+    lines.append('    <geom name="floor" size="0 0 0.05" type="plane" material="groundplane" friction="1.0"/>')
+    lines.append("  </worldbody>")
+    lines.append("")
+    lines.append("  <keyframe>")
+    lines.append(f'    <key name="{key_name}"')
+    lines.append('      qpos="')
+    lines.extend([f"    {ln}" for ln in qpos_lines])
+    lines.append('    "')
+    if len(ctrl_lines) > 0:
+        lines.append('      ctrl="')
+        lines.extend([f"    {ln}" for ln in ctrl_lines])
+        lines.append('    "/>')
+    else:
+        lines.append("    />")
+    lines.append("  </keyframe>")
+    lines.append("")
+    lines.append("</mujoco>")
+    lines.append("")
+    return "\n".join(lines)
+
+
+def render_scene_rough_xml(cfg: dict, *, include_file: str) -> str:
+    """Generate a joystick rough-terrain scene XML matching the training repo style."""
+    scenes = cfg.get("scenes", {}) or {}
+    rough = scenes.get("rough", {}) or {}
+    key_cfg = scenes.get("keyframe", {}) or {}
+    key_name = str(key_cfg.get("name", "home"))
+    floating_base = bool((cfg.get("options", {}) or {}).get("floating_base", True))
+
+    texture_file = str(rough.get("texture_file", "../assets/rocky_texture.png"))
+    hfield_file = str(rough.get("hfield_file", "../assets/hfield.png"))
+    hfield_size = rough.get("hfield_size", [10, 10, 0.05, 0.1])
+    if not (isinstance(hfield_size, (list, tuple)) and len(hfield_size) == 4):
+        raise ValueError("scenes.rough.hfield_size must be a 4-list: [x y z base]")
+    hfield_size_str = " ".join(_fmt_scene_num(float(x)) for x in hfield_size)
+
+    joint_qpos_list, ctrl_list = _scene_keyframe_vectors(cfg)
+
+    base_xyz, base_rpy = _cfg_base_pose(cfg)
+    base_q = quat_from_R(R_from_rpy(*base_rpy))
+
+    qpos_lines: list[str] = []
+    if floating_base:
+        qpos_lines.append(f"{_fmt_scene_num(base_xyz[0])} {_fmt_scene_num(base_xyz[1])} {_fmt_scene_num(base_xyz[2])}")
+        qpos_lines.append(f"{_fmt_scene_num(base_q[0])} {_fmt_scene_num(base_q[1])} {_fmt_scene_num(base_q[2])} {_fmt_scene_num(base_q[3])}")
+    qpos_lines.append(" ".join(_fmt_scene_num(x) for x in joint_qpos_list))
+    ctrl_lines = [" ".join(_fmt_scene_num(x) for x in ctrl_list)] if len(ctrl_list) > 0 else []
+
+    model_name = str(rough.get("model_name", "scene"))
+    floor_contype = int(rough.get("floor_contype", 1))
+    floor_conaffinity = int(rough.get("floor_conaffinity", 2))
+    floor_condim = int(rough.get("floor_condim", 3))
+
+    lines: list[str] = []
+    lines.append(f'<mujoco model="{model_name}">')
+    lines.append(f'  <include file="{include_file}"/>')
+    lines.append("")
+    lines.append("     <!-- setup scene -->")
+    lines.append('  <statistic extent="0.8" center="0 0 0.5"/>')
+    lines.append('  <!-- <statistic meansize="0.144785" extent="1.23314" center="0.025392 2.0634e-05 -0.245975"/> -->')
+    lines.append("  <visual>")
+    lines.append('    <headlight diffuse="0.6 0.6 0.6" ambient="0.3 0.3 0.3" specular="0 0 0"/>')
+    lines.append('    <rgba haze="0.15 0.25 0.35 1"/>')
+    lines.append('    <global azimuth="120" elevation="-20"/>')
+    lines.append("  </visual>")
+    lines.append("")
+    lines.append("  <asset>")
+    lines.append('    <texture type="skybox" builtin="gradient" rgb1="0.3 0.5 0.7" rgb2="0 0 0" width="512" height="3072"/>')
+    lines.append('    <texture type="2d" name="groundplane"')
+    lines.append(f'             file="{texture_file}"/>')
+    lines.append('    <material name="groundplane" texture="groundplane" texuniform="true" texrepeat="5 5" reflectance="0.8"/>')
+    lines.append('    <hfield name="hfield"')
+    lines.append(f'            file="{hfield_file}"')
+    lines.append(f'            size="{hfield_size_str}"/>')
+    lines.append("  </asset>")
+    lines.append("")
+    lines.append("  <worldbody>")
+    lines.append('    <light pos="0 0 1.5" dir="0 0 -1" directional="true"/>')
+    lines.append("    <!-- Rough terrain floor as a heightfield, with explicit friction 1.0. -->")
+    lines.append('    <geom name="floor"')
+    lines.append('          type="hfield" hfield="hfield" material="groundplane"')
+    lines.append(f'          priority="1" friction="1.0" contype="{floor_contype}" conaffinity="{floor_conaffinity}" condim="{floor_condim}"/>')
+    lines.append("  </worldbody>")
+    lines.append("")
+    lines.append("  <keyframe>")
+    lines.append(f'    <key name="{key_name}"')
+    lines.append('      qpos="')
+    lines.extend([f"    {ln}" for ln in qpos_lines])
+    lines.append('    "')
+    if len(ctrl_lines) > 0:
+        lines.append('      ctrl="')
+        lines.extend([f"    {ln}" for ln in ctrl_lines])
+        lines.append('    "/>')
+    else:
+        lines.append("    />")
+    lines.append("  </keyframe>")
+    lines.append("")
+    lines.append("</mujoco>")
+    lines.append("")
+    return "\n".join(lines)
+
+
+def _write_text(path: Path, text: str) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(text, encoding="utf-8")
+
+
 # ---------------- URDF helpers ----------------
 
 
@@ -154,6 +426,11 @@ def _urdf_add_joint(
 def build_urdf(cfg: dict, *, motor_mesh_path: Path) -> ET.ElementTree:
     require_keys(cfg, ["robot", "assets", "components", "left_leg", "trunk"], "root")
     robot = ET.Element("robot", name=str(cfg["robot"]["name"]))
+
+    # Place the robot above the floor in URDF-based tools by adding a world link.
+    base_xyz, base_rpy = _cfg_base_pose(cfg)
+    ET.SubElement(robot, "link", name="world")
+    _urdf_add_joint(robot, "world_to_base", "fixed", "world", "base_motor_link", base_xyz, base_rpy)
 
     assets = cfg["assets"]
     comp = cfg["components"]
@@ -382,6 +659,32 @@ def build_mjcf(cfg: dict, *, motor_mesh_file: str) -> ET.ElementTree:
     floating_base = bool(opts.get("floating_base", True))
     use_joint_frames = bool(opts.get("use_joint_frames", True))
     add_sensors = bool(opts.get("add_sensors", True))
+    add_actuators = bool(opts.get("add_actuators", True))
+    act_cfg = cfg.get("actuators", {}) or {}
+    # Actuator gains:
+    # - We accept per-motor PID triples [kp, ki, kd] (requested by user).
+    # - MuJoCo built-in <position> actuator uses (kp, kv) => we map kd -> kv.
+    # - ki is kept in the config for future true integral control (plugin), but is not used here.
+    kp_motor_default = float(act_cfg.get("kp_motor", 40.0))
+    kd_motor_default = float(act_cfg.get("kd_motor", act_cfg.get("kv_motor", 0.0)))
+    kp_trunk_default = float(act_cfg.get("kp_trunk", 20.0))
+    kd_trunk_default = float(act_cfg.get("kd_trunk", act_cfg.get("kv_trunk", 0.0)))
+
+    leg_pid = act_cfg.get("leg_pid")
+    trunk_pid = act_cfg.get("trunk_pid")
+    ctrlrange = act_cfg.get("ctrlrange", [-3.14159, 3.14159])
+    if not (isinstance(ctrlrange, (list, tuple)) and len(ctrlrange) == 2):
+        raise ValueError("actuators.ctrlrange must be [min, max]")
+    ctrlrange_str = f"{float(ctrlrange[0])} {float(ctrlrange[1])}"
+
+    def _pid_to_kpkv(pid: object, *, kp_fallback: float, kd_fallback: float) -> tuple[float, float]:
+        if pid is None:
+            return (kp_fallback, kd_fallback)
+        if not (isinstance(pid, (list, tuple)) and len(pid) == 3):
+            raise ValueError("actuators leg_pid/trunk_pid entries must be [kp, ki, kd]")
+        kp = float(pid[0])
+        kd = float(pid[2])
+        return (kp, kd)
 
     motor_c = comp["motor"]
     motor_mass = float(motor_c["mass_kg"])
@@ -444,7 +747,7 @@ def build_mjcf(cfg: dict, *, motor_mesh_file: str) -> ET.ElementTree:
             _mj_inertial_box(b, frame_mass, frame_size, (0.0, 0.0, 0.0))
         return b
 
-    def add_motor(parent_out: ET.Element, *, prefix: str, motor_cfg: dict, mirror: bool) -> ET.Element:
+    def add_motor(parent_out: ET.Element, *, prefix: str, motor_cfg: dict, mirror: bool, motor_index: int) -> ET.Element:
         """
         Add a motor stage, *motor-centric*:
         - The motor body pose (xyz/rpy) is always applied first relative to parent_out.
@@ -468,7 +771,16 @@ def build_mjcf(cfg: dict, *, motor_mesh_file: str) -> ET.ElementTree:
 
         motor_body = ET.SubElement(parent_out, "body", name=f"{prefix}_{name}", pos=fmt_xyz(*xyz), quat=fmt_quat_wxyz(quat))
         if rotates:
-            ET.SubElement(motor_body, "joint", name=f"{prefix}_{name}_joint", type="hinge", axis=fmt_xyz(*axis), pos=fmt_xyz(0, 0, 0), range="-3.14159 3.14159")
+            ET.SubElement(
+                motor_body,
+                "joint",
+                name=f"{prefix}_{name}_joint",
+                type="hinge",
+                axis=fmt_xyz(*axis),
+                pos=fmt_xyz(0, 0, 0),
+                range="-3.14159 3.14159",
+                **_joint_passive_attrs_for_leg(cfg, motor_index=motor_index, motor_cfg=motor_cfg),
+            )
 
         _mj_inertial_box(motor_body, motor_mass, motor_size, motor_com)
         _mj_geom_mesh(motor_body, "motor_mesh", motor_vis_rgba, contype=motor_mesh_contype, conaffinity=motor_mesh_conaffinity, group="0")
@@ -476,7 +788,16 @@ def build_mjcf(cfg: dict, *, motor_mesh_file: str) -> ET.ElementTree:
 
         out_body = add_frame_body(motor_body, f"{prefix}_{name}_out")
         if not rotates:
-            ET.SubElement(out_body, "joint", name=f"{prefix}_{name}_joint", type="hinge", axis=fmt_xyz(*axis), pos=fmt_xyz(0, 0, 0), range="-3.14159 3.14159")
+            ET.SubElement(
+                out_body,
+                "joint",
+                name=f"{prefix}_{name}_joint",
+                type="hinge",
+                axis=fmt_xyz(*axis),
+                pos=fmt_xyz(0, 0, 0),
+                range="-3.14159 3.14159",
+                **_joint_passive_attrs_for_leg(cfg, motor_index=motor_index, motor_cfg=motor_cfg),
+            )
         return out_body
 
     def add_leg(prefix: str, mirror: bool) -> None:
@@ -484,8 +805,8 @@ def build_mjcf(cfg: dict, *, motor_mesh_file: str) -> ET.ElementTree:
         require_keys(leg, ["motors", "end_effector"], "left_leg")
         parent_out = base_body
 
-        for m in leg["motors"]:
-            parent_out = add_motor(parent_out, prefix=prefix, motor_cfg=m, mirror=mirror)
+        for mi, m in enumerate(leg["motors"]):
+            parent_out = add_motor(parent_out, prefix=prefix, motor_cfg=m, mirror=mirror, motor_index=mi)
 
         # End effector (fixed)
         ee = leg["end_effector"]
@@ -528,7 +849,15 @@ def build_mjcf(cfg: dict, *, motor_mesh_file: str) -> ET.ElementTree:
             ET.SubElement(ee_body, "site", name=site_name, pos=fmt_xyz(0.0, 0.0, 0.0), quat=fmt_quat_wxyz((1.0, 0.0, 0.0, 0.0)))
 
     world = ET.SubElement(mj, "worldbody")
-    base_body = ET.SubElement(world, "body", name="base_motor_link", pos=fmt_xyz(0, 0, 0), quat=fmt_quat_wxyz((1.0, 0.0, 0.0, 0.0)))
+    base_xyz, base_rpy = _cfg_base_pose(cfg)
+    base_q = quat_from_R(R_from_rpy(*base_rpy))
+    base_body = ET.SubElement(
+        world,
+        "body",
+        name="base_motor_link",
+        pos=fmt_xyz(*base_xyz),
+        quat=fmt_quat_wxyz(base_q),
+    )
     if floating_base:
         ET.SubElement(base_body, "freejoint", name="floating_base")
 
@@ -559,6 +888,7 @@ def build_mjcf(cfg: dict, *, motor_mesh_file: str) -> ET.ElementTree:
         type=str(tjoint.get("type", "hinge")),
         axis=fmt_xyz(*as_vec3(tjoint.get("axis_xyz", (0.0, 0.0, 1.0)))),
         range="-3.14159 3.14159",
+        **_joint_passive_attrs_for_trunk(cfg),
     )
     _mj_inertial_box(trunk_body, trunk_mass, trunk_size, trunk_com)
     _mj_geom_box(trunk_body, trunk_size, trunk_geom, trunk_rgba, group="0", contype=trunk_geom_contype, conaffinity=trunk_geom_conaffinity)
@@ -603,8 +933,59 @@ def build_mjcf(cfg: dict, *, motor_mesh_file: str) -> ET.ElementTree:
         trunk_joint_name = str(cfg["trunk"]["joint"].get("name", "base_to_trunk"))
         _add_joint_sensors(trunk_joint_name)
 
+    # Actuators (position actuators for joystick policy training)
+    if add_actuators:
+        actuator = ET.SubElement(mj, "actuator")
+        motors = list(cfg["left_leg"]["motors"])
+        if leg_pid is not None:
+            if not isinstance(leg_pid, (list, tuple)):
+                raise ValueError("actuators.leg_pid must be a list of [kp, ki, kd] triples")
+            if len(leg_pid) != len(motors):
+                raise ValueError(f"actuators.leg_pid must have length {len(motors)}, got {len(leg_pid)}")
+
+        for i, m in enumerate(motors):
+            stage = str(m["name"])
+            kp_i, kv_i = _pid_to_kpkv(leg_pid[i] if leg_pid is not None else None, kp_fallback=kp_motor_default, kd_fallback=kd_motor_default)
+            ET.SubElement(
+                actuator,
+                "position",
+                name=f"l_{stage}",
+                joint=f"l_{stage}_joint",
+                kp=f"{kp_i:g}",
+                kv=f"{kv_i:g}",
+                ctrlrange=ctrlrange_str,
+            )
+            ET.SubElement(
+                actuator,
+                "position",
+                name=f"r_{stage}",
+                joint=f"r_{stage}_joint",
+                kp=f"{kp_i:g}",
+                kv=f"{kv_i:g}",
+                ctrlrange=ctrlrange_str,
+            )
+        trunk_joint_name = str(cfg["trunk"]["joint"].get("name", "base_to_trunk"))
+        kp_t, kv_t = _pid_to_kpkv(trunk_pid, kp_fallback=kp_trunk_default, kd_fallback=kd_trunk_default)
+        ET.SubElement(
+            actuator,
+            "position",
+            name=trunk_joint_name,
+            joint=trunk_joint_name,
+            kp=f"{kp_t:g}",
+            kv=f"{kv_t:g}",
+            ctrlrange=ctrlrange_str,
+        )
+
     _indent(mj)
     return ET.ElementTree(mj)
+
+
+def build_scene_flat(cfg: dict, *, include_file: str) -> ET.ElementTree:
+    raise RuntimeError("build_scene_flat is deprecated; use render_scene_flat_xml()")
+
+
+def build_scene_rough(cfg: dict, *, include_file: str) -> ET.ElementTree:
+    raise RuntimeError("build_scene_rough is deprecated; use render_scene_rough_xml()")
 
 
 def _write_xml(path: Path, tree: ET.ElementTree, declaration: bool) -> None:
@@ -630,6 +1011,10 @@ def main() -> int:
     out_dir = Path(args.out_dir or out_cfg.get("out_dir") or DEFAULT_OUT_DIR).resolve()
     urdf_name = str(args.urdf_name or out_cfg.get("urdf_name") or "robot.urdf")
     mjcf_name = str(args.mjcf_name or out_cfg.get("mjcf_name") or "robot.xml")
+    scenes_cfg = cfg.get("scenes", {}) or {}
+    gen_scenes = bool(scenes_cfg.get("generate", True))
+    scene_flat_name = str((scenes_cfg.get("flat", {}) or {}).get("filename", "scene_joystick_flat_terrain.xml"))
+    scene_rough_name = str((scenes_cfg.get("rough", {}) or {}).get("filename", "scene_joystick_rough_terrain.xml"))
 
     assets = cfg.get("assets", {}) or {}
     motor_stl_cfg = Path(str(assets.get("motor_stl", "")))
@@ -670,6 +1055,16 @@ def main() -> int:
     _write_xml(mjcf_path, mjcf_tree, declaration=False)
     print(f"[OK] wrote URDF: {urdf_path}")
     print(f"[OK] wrote MJCF: {mjcf_path}")
+
+    if gen_scenes:
+        flat_path = out_dir / scene_flat_name
+        rough_path = out_dir / scene_rough_name
+        flat_text = render_scene_flat_xml(cfg, include_file=mjcf_name)
+        rough_text = render_scene_rough_xml(cfg, include_file=mjcf_name)
+        _write_text(flat_path, flat_text)
+        _write_text(rough_path, rough_text)
+        print(f"[OK] wrote scene (flat): {flat_path}")
+        print(f"[OK] wrote scene (rough): {rough_path}")
     return 0
 
 

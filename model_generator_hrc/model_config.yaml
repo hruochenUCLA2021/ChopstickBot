@@ -16,6 +16,62 @@ options:
   use_joint_frames: true
   # If true, emit MJCF sites+sensors (imu, feet, joint sensors)
   add_sensors: true
+  # If true, emit MJCF <actuator> position actuators (so keyframe ctrl has non-zero length).
+  add_actuators: true
+  # Base pose in MJCF/URDF and in generated scene keyframes.
+  base_pose:
+    xyz: [0.0, 0.0, 0.30]
+    rpy: [0.0, 0.0, 0.0]
+  # Joint passive stabilization terms (applied to all hinge joints).
+  joint_passive:
+    enable: true
+    default:
+      damping: 0.01
+      frictionloss: 0.01
+      armature: 0.02
+    # Optional: per-motor overrides (one dict per left_leg.motors entry)
+    # leg:
+    #   - {damping: 0.01, frictionloss: 0.01, armature: 0.02}
+    # trunk:
+    #   damping: 0.01
+    #   frictionloss: 0.01
+    #   armature: 0.02
+
+actuators:
+  # One [kp, ki, kd] triple per left-leg motor stage (right leg mirrors it).
+  leg_pid:
+    - [5, 0, 0]   # hip_pitch
+    - [5, 0, 0]   # hip_roll
+    - [5, 0, 0]   # hip_thigh
+    - [5, 0, 0]   # hip_calf
+    - [5, 0, 0]   # ankle_pitch
+    - [5, 0, 0]   # ankle_roll
+  # Trunk joint PID triple
+  trunk_pid: [5, 0, 0]
+  ctrlrange: [-3.14159, 3.14159]
+
+scenes:
+  # If true, emit `scene_joystick_flat_terrain.xml` and `scene_joystick_rough_terrain.xml`.
+  generate: true
+  keyframe:
+    # Keyframe name used by training env reset.
+    name: home
+    # Optional overrides (otherwise generator fills with zeros):
+    # - joint_qpos: [ ... ]   # length = 2*len(left_leg.motors) + 1
+    # - ctrl:      [ ... ]    # length = 2*len(left_leg.motors) + 1
+  flat:
+    filename: scene_joystick_flat_terrain_phonebot.xml
+    model_name: "phonebot scene"
+  rough:
+    filename: scene_joystick_rough_terrain_phonebot.xml
+    model_name: "phonebot scene"
+    # For this output folder we keep assets in ./assets/
+    texture_file: assets/rocky_texture.png
+    hfield_file: assets/hfield.png
+    hfield_size: [10, 10, 0.05, 0.1]
+    floor_contype: 1
+    floor_conaffinity: 2
+    floor_condim: 3
 
 sensors:
   imu_site:

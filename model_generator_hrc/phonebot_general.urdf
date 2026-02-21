@@ -1,5 +1,11 @@
 <?xml version='1.0' encoding='utf-8'?>
 <robot name="phonebot_general_6motor">
+  <link name="world" />
+  <joint name="world_to_base" type="fixed">
+    <origin xyz="0.000000 0.000000 0.330000" rpy="0.000000 0.000000 0.000000" />
+    <parent link="world" />
+    <child link="base_motor_link" />
+    </joint>
   <link name="base_motor_link">
     <visual>
       <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
