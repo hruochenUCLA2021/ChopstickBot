@@ -121,9 +121,9 @@
         </material>
       </visual>
     <collision>
-      <origin xyz="0.000000 0.000000 0.000000" rpy="1.570796 0.000000 0.000000" />
+      <origin xyz="0.000000 -0.100000 0.000000" rpy="0.000000 0.000000 0.000000" />
       <geometry>
-        <cylinder radius="0.005000" length="0.200000" />
+        <box size="0.020000 0.020000 0.020000" />
         </geometry>
       </collision>
     <inertial>
@@ -230,9 +230,9 @@
         </material>
       </visual>
     <collision>
-      <origin xyz="0.000000 0.000000 0.000000" rpy="1.570796 0.000000 0.000000" />
+      <origin xyz="0.000000 -0.100000 0.000000" rpy="0.000000 0.000000 0.000000" />
       <geometry>
-        <cylinder radius="0.005000" length="0.200000" />
+        <box size="0.020000 0.020000 0.020000" />
         </geometry>
       </collision>
     <inertial>

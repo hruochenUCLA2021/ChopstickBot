@@ -131,9 +131,16 @@ components:
     # geom_offset_rpy will be added in generator (rotate cylinder axis Z -> +Y)
     geom_offset_rpy: [1.5707963267948966, 0.0, 0.0]
     shape:
-      type: cylinder
+      # Cylinder visual only + collision proxy box at the tip (MJX-friendly).
+      type: cylinder_tip_box
       radius: 0.005
       length: 0.20
+      # Full box size (MuJoCo uses half-sizes internally).
+      tip_box_size_xyz: [0.02, 0.02, 0.02]
+      # Tip placement along the cylinder axis in end-effector frame:
+      # tip_pos = geom_offset_xyz + axis*(tip_direction*length/2 + tip_offset)
+      tip_direction: 1.0
+      tip_offset: 0.0
 
 # Trunk attaches as the 3rd branch from the base (after legs are emitted in XML order).
 trunk:

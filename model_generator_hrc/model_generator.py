@@ -403,6 +403,15 @@ def _urdf_add_collision_cylinder_z(link: ET.Element, radius: float, length: floa
     ET.SubElement(geom, "cylinder", radius=f"{radius:.6f}", length=f"{length:.6f}")
 
 
+def _mat_vec3(R: tuple[tuple[float, float, float], tuple[float, float, float], tuple[float, float, float]], v: tuple[float, float, float]) -> tuple[float, float, float]:
+    x, y, z = v
+    return (
+        R[0][0] * x + R[0][1] * y + R[0][2] * z,
+        R[1][0] * x + R[1][1] * y + R[1][2] * z,
+        R[2][0] * x + R[2][1] * y + R[2][2] * z,
+    )
+
+
 def _urdf_add_joint(
     robot: ET.Element,
     name: str,
@@ -460,9 +469,16 @@ def build_urdf(cfg: dict, *, motor_mesh_path: Path) -> ET.ElementTree:
         ee_size = as_vec3(ee_shape["size_xyz"])
         ee_radius = None
         ee_length = None
+        ee_tip_box_size = None
     elif ee_type in ("cylinder", "capsule"):
         ee_radius = float(ee_shape["radius"])
         ee_length = float(ee_shape["length"])
+        ee_size = None
+        ee_tip_box_size = None
+    elif ee_type == "cylinder_tip_box":
+        ee_radius = float(ee_shape["radius"])
+        ee_length = float(ee_shape["length"])
+        ee_tip_box_size = as_vec3(ee_shape.get("tip_box_size_xyz", (0.02, 0.02, 0.02)))
         ee_size = None
     else:
         raise ValueError(f"Unsupported end_effector.shape.type: {ee_type!r}")
@@ -528,11 +544,25 @@ def build_urdf(cfg: dict, *, motor_mesh_path: Path) -> ET.ElementTree:
             _urdf_add_visual_box(eel, ee_size, ee_rgba, xyz=ee_geom, rpy=ee_geom_rpy)
             _urdf_add_collision_box(eel, ee_size, xyz=ee_geom, rpy=ee_geom_rpy)
             _urdf_add_inertial_box(eel, ee_mass, ee_size, com_xyz=ee_com)
-        else:
+        elif ee_type in ("cylinder", "capsule"):
             r = float(ee_radius)
             L = float(ee_length)
             _urdf_add_visual_cylinder_z(eel, r, L, ee_rgba, xyz=ee_geom, rpy=ee_geom_rpy)
             _urdf_add_collision_cylinder_z(eel, r, L, xyz=ee_geom, rpy=ee_geom_rpy)
+            _urdf_add_inertial_cylinder_z(eel, ee_mass, r, L, com_xyz=ee_com)
+        elif ee_type == "cylinder_tip_box":
+            # Visual-only cylinder, collision-only box at the tip (MuJoCo MJX-friendly).
+            r = float(ee_radius)
+            L = float(ee_length)
+            assert ee_tip_box_size is not None
+            _urdf_add_visual_cylinder_z(eel, r, L, ee_rgba, xyz=ee_geom, rpy=ee_geom_rpy)
+            # Tip box position in end-effector link frame: ee_geom + axis*(sign*L/2 + offset)
+            tip_dir = float(ee_shape.get("tip_direction", 1.0))
+            tip_offset = float(ee_shape.get("tip_offset", 0.0))
+            axis_vec = _mat_vec3(R_from_rpy(*ee_geom_rpy), (0.0, 0.0, 1.0))
+            tip_dist = tip_dir * 0.5 * L + tip_offset
+            tip_pos = (ee_geom[0] + axis_vec[0] * tip_dist, ee_geom[1] + axis_vec[1] * tip_dist, ee_geom[2] + axis_vec[2] * tip_dist)
+            _urdf_add_collision_box(eel, ee_tip_box_size, xyz=tip_pos, rpy=(0.0, 0.0, 0.0))
             _urdf_add_inertial_cylinder_z(eel, ee_mass, r, L, com_xyz=ee_com)
         _urdf_add_joint(robot, f"{prefix}_end_effector_fixed", "fixed", parent_out, ee_link, eexyz, eerpy)
 
@@ -641,6 +671,33 @@ def _mj_geom_box(
     )
 
 
+def _mj_geom_box_named(
+    body: ET.Element,
+    *,
+    name: str,
+    size_xyz: tuple[float, float, float],
+    pos_xyz: tuple[float, float, float],
+    rgba: list[float],
+    group: str,
+    contype: int,
+    conaffinity: int,
+) -> None:
+    # MuJoCo box uses half-sizes.
+    sx, sy, sz = (0.5 * size_xyz[0], 0.5 * size_xyz[1], 0.5 * size_xyz[2])
+    ET.SubElement(
+        body,
+        "geom",
+        name=name,
+        type="box",
+        size=fmt_xyz(sx, sy, sz),
+        pos=fmt_xyz(*pos_xyz),
+        rgba=" ".join(str(float(x)) for x in rgba),
+        contype=str(int(contype)),
+        conaffinity=str(int(conaffinity)),
+        group=group,
+    )
+
+
 def build_mjcf(cfg: dict, *, motor_mesh_file: str) -> ET.ElementTree:
     require_keys(cfg, ["robot", "assets", "components", "left_leg", "trunk"], "root")
     model_name = str(cfg["robot"]["name"])
@@ -716,9 +773,16 @@ def build_mjcf(cfg: dict, *, motor_mesh_file: str) -> ET.ElementTree:
         ee_size = as_vec3(ee_shape["size_xyz"])
         ee_radius = None
         ee_length = None
+        ee_tip_box_size = None
     elif ee_type in ("cylinder", "capsule"):
         ee_radius = float(ee_shape["radius"])
         ee_length = float(ee_shape["length"])
+        ee_size = None
+        ee_tip_box_size = None
+    elif ee_type == "cylinder_tip_box":
+        ee_radius = float(ee_shape["radius"])
+        ee_length = float(ee_shape["length"])
+        ee_tip_box_size = as_vec3(ee_shape.get("tip_box_size_xyz", (0.02, 0.02, 0.02)))
         ee_size = None
     else:
         raise ValueError(f"Unsupported end_effector.shape.type: {ee_type!r}")
@@ -824,7 +888,7 @@ def build_mjcf(cfg: dict, *, motor_mesh_file: str) -> ET.ElementTree:
             assert ee_size is not None
             _mj_inertial_box(ee_body, ee_mass, ee_size, ee_com)
             _mj_geom_box(ee_body, ee_size, ee_geom, ee_rgba, group="0", contype=ee_geom_contype, conaffinity=ee_geom_conaffinity)
-        else:
+        elif ee_type in ("cylinder", "capsule"):
             r = float(ee_radius)
             L = float(ee_length)
             _mj_inertial_cylinder_z(ee_body, ee_mass, r, L, ee_com)
@@ -840,6 +904,46 @@ def build_mjcf(cfg: dict, *, motor_mesh_file: str) -> ET.ElementTree:
                 contype=str(int(ee_geom_contype)),
                 conaffinity=str(int(ee_geom_conaffinity)),
                 group="0",
+            )
+        elif ee_type == "cylinder_tip_box":
+            # Visual-only cylinder (no collision) + collision proxy box at tip.
+            r = float(ee_radius)
+            L = float(ee_length)
+            assert ee_tip_box_size is not None
+            _mj_inertial_cylinder_z(ee_body, ee_mass, r, L, ee_com)
+            gR = R_from_rpy(*ee_geom_rpy)
+            gq = quat_from_R(gR)
+            axis_vec = _mat_vec3(gR, (0.0, 0.0, 1.0))
+            tip_dir = float(ee_shape.get("tip_direction", 1.0))
+            tip_offset = float(ee_shape.get("tip_offset", 0.0))
+            tip_dist = tip_dir * 0.5 * L + tip_offset
+            tip_pos = (ee_geom[0] + axis_vec[0] * tip_dist, ee_geom[1] + axis_vec[1] * tip_dist, ee_geom[2] + axis_vec[2] * tip_dist)
+
+            # Visual bar (no contact, MJX does not support hfield×cylinder collisions).
+            ET.SubElement(
+                ee_body,
+                "geom",
+                type="cylinder",
+                size=f"{r:.6f} {0.5*L:.6f}",
+                pos=fmt_xyz(*ee_geom),
+                quat=fmt_quat_wxyz(gq),
+                rgba=" ".join(str(float(x)) for x in ee_rgba),
+                contype="0",
+                conaffinity="0",
+                group="0",
+            )
+
+            # Collision proxy at bar tip (supports hfield×box).
+            tip_name = left_ee_site_name if prefix == "l" else right_ee_site_name
+            _mj_geom_box_named(
+                ee_body,
+                name=tip_name,
+                size_xyz=ee_tip_box_size,
+                pos_xyz=tip_pos,
+                rgba=[0.3, 0.3, 0.3, 1.0],
+                group="1",
+                contype=ee_geom_contype,
+                conaffinity=ee_geom_conaffinity,
             )
 
         # Site on end-effector for foot sensors (name matches HERMES conventions)

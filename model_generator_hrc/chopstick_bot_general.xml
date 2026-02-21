@@ -26,7 +26,8 @@
               <joint name="l_hip_roll_joint" type="hinge" axis="0.000000 0.000000 1.000000" pos="0.000000 0.000000 0.000000" range="-3.14159 3.14159" damping="0.01" frictionloss="0.01" armature="0.02" />
               <body name="l_end_effector" pos="0.000000 -0.170000 0.000000" quat="1.000000 0.000000 0.000000 0.000000">
                 <inertial pos="0.000000 0.000000 0.000000" mass="0.030000" diaginertia="0.000100187500 0.000100187500 0.000000375000" />
-                <geom type="cylinder" size="0.005000 0.100000" pos="0.000000 0.000000 0.000000" quat="0.707107 0.707107 0.000000 0.000000" rgba="0.7 0.7 0.7 1.0" contype="1" conaffinity="1" group="0" />
+                <geom type="cylinder" size="0.005000 0.100000" pos="0.000000 0.000000 0.000000" quat="0.707107 0.707107 0.000000 0.000000" rgba="0.7 0.7 0.7 1.0" contype="0" conaffinity="0" group="0" />
+                <geom name="left_foot" type="box" size="0.010000 0.010000 0.010000" pos="0.000000 -0.100000 0.000000" rgba="0.3 0.3 0.3 1.0" contype="1" conaffinity="1" group="1" />
                 <site name="left_foot" pos="0.000000 0.000000 0.000000" quat="1.000000 0.000000 0.000000 0.000000" />
                 </body>
               </body>
@@ -49,7 +50,8 @@
               <joint name="r_hip_roll_joint" type="hinge" axis="0.000000 0.000000 1.000000" pos="0.000000 0.000000 0.000000" range="-3.14159 3.14159" damping="0.01" frictionloss="0.01" armature="0.02" />
               <body name="r_end_effector" pos="-0.000000 -0.170000 0.000000" quat="1.000000 0.000000 0.000000 0.000000">
                 <inertial pos="0.000000 0.000000 0.000000" mass="0.030000" diaginertia="0.000100187500 0.000100187500 0.000000375000" />
-                <geom type="cylinder" size="0.005000 0.100000" pos="0.000000 0.000000 0.000000" quat="0.707107 0.707107 0.000000 0.000000" rgba="0.7 0.7 0.7 1.0" contype="1" conaffinity="1" group="0" />
+                <geom type="cylinder" size="0.005000 0.100000" pos="0.000000 0.000000 0.000000" quat="0.707107 0.707107 0.000000 0.000000" rgba="0.7 0.7 0.7 1.0" contype="0" conaffinity="0" group="0" />
+                <geom name="right_foot" type="box" size="0.010000 0.010000 0.010000" pos="0.000000 -0.100000 0.000000" rgba="0.3 0.3 0.3 1.0" contype="1" conaffinity="1" group="1" />
                 <site name="right_foot" pos="0.000000 0.000000 0.000000" quat="1.000000 0.000000 0.000000 0.000000" />
                 </body>
               </body>
