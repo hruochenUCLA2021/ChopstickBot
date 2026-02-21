@@ -16,6 +16,8 @@ options:
   use_joint_frames: true
   # Keep sensors off for this config by default (can turn on when needed).
   add_sensors: true
+  # If true, emit MJCF <camera> elements (e.g., "track" camera for rollouts).
+  add_cameras: true
   # If true, emit MJCF <actuator> position actuators (so keyframe ctrl has non-zero length).
   add_actuators: true
   # Base pose in MJCF/URDF and in generated scene keyframes.
@@ -77,6 +79,15 @@ sensors:
   end_effector_sites:
     left_name: left_foot
     right_name: right_foot
+
+# Optional cameras to add under `base_motor_link` in MJCF.
+# NOTE: poses are expressed in the `base_motor_link` body frame (z up, y forward, x sideways).
+cameras:
+  - name: track
+    mode: trackcom
+    # This is the HERMES/T1 track camera rotated into our base frame.
+    pos_xyz: [0.947, 1.248, 0.5]
+    xyaxes: [-0.779, 0.628, 0.0, -0.221, -0.274, 0.936]
 
 assets:
   motor_stl: /media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/reference/xm430_motor/good_conversion_stl/XL-430_new_coordinate_on_axis.STL

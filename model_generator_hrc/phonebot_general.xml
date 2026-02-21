@@ -7,6 +7,7 @@
     <body name="base_motor_link" pos="0.000000 0.000000 0.330000" quat="1.000000 0.000000 0.000000 0.000000">
       <freejoint name="floating_base" />
       <site name="imu" pos="0.000000 0.000000 0.000000" quat="0.707107 0.000000 0.000000 0.707107" />
+      <camera name="track" mode="trackcom" pos="0.947000 1.248000 0.500000" xyaxes="-0.779 0.628 0 -0.221 -0.274 0.936" />
       <inertial pos="0.000000 -0.012000 0.000000" mass="0.065000" diaginertia="0.000017973854 0.000010661354 0.000016111875" />
       <geom type="mesh" mesh="motor_mesh" rgba="0.89804 0.91765 0.92941 1.0" contype="0" conaffinity="0" group="0" />
       <geom type="box" size="0.014250 0.023250 0.017000" pos="0.000000 -0.012000 0.000000" rgba="0.0 0.8 0.1 1.0" contype="0" conaffinity="0" group="1" />

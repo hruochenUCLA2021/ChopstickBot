@@ -716,6 +716,7 @@ def build_mjcf(cfg: dict, *, motor_mesh_file: str) -> ET.ElementTree:
     floating_base = bool(opts.get("floating_base", True))
     use_joint_frames = bool(opts.get("use_joint_frames", True))
     add_sensors = bool(opts.get("add_sensors", True))
+    add_cameras = bool(opts.get("add_cameras", True))
     add_actuators = bool(opts.get("add_actuators", True))
     act_cfg = cfg.get("actuators", {}) or {}
     # Actuator gains:
@@ -969,6 +970,34 @@ def build_mjcf(cfg: dict, *, motor_mesh_file: str) -> ET.ElementTree:
     if add_sensors:
         imu_q = quat_from_R(R_from_rpy(*imu_site_rpy))
         ET.SubElement(base_body, "site", name=imu_site_name, pos=fmt_xyz(*imu_site_xyz), quat=fmt_quat_wxyz(imu_q))
+
+    # Optional cameras on base body (e.g., "track" for Mujoco renderer).
+    cameras_cfg = cfg.get("cameras", []) or []
+    if add_cameras and isinstance(cameras_cfg, (list, tuple)):
+        for cam in cameras_cfg:
+            if not isinstance(cam, dict):
+                raise ValueError("cameras entries must be dicts")
+            require_keys(cam, ["name"], "cameras[]")
+            cam_name = str(cam["name"])
+            cam_mode = str(cam.get("mode", "trackcom"))
+            cam_pos = as_vec3(cam.get("pos_xyz", cam.get("pos", (0.0, 0.0, 0.0))))
+            attrs: dict[str, str] = {
+                "name": cam_name,
+                "mode": cam_mode,
+                "pos": fmt_xyz(*cam_pos),
+            }
+            if "xyaxes" in cam and cam["xyaxes"] is not None:
+                xy = cam["xyaxes"]
+                if not (isinstance(xy, (list, tuple)) and len(xy) == 6):
+                    raise ValueError("camera.xyaxes must be a 6-list: [x1 x2 x3 y1 y2 y3]")
+                attrs["xyaxes"] = " ".join(f"{float(x):.6f}".rstrip("0").rstrip(".") for x in xy)
+            elif "quat_wxyz" in cam and cam["quat_wxyz"] is not None:
+                q = cam["quat_wxyz"]
+                if not (isinstance(q, (list, tuple)) and len(q) == 4):
+                    raise ValueError("camera.quat_wxyz must be a 4-list: [w x y z]")
+                attrs["quat"] = fmt_quat_wxyz((float(q[0]), float(q[1]), float(q[2]), float(q[3])))
+            # else: leave orientation unspecified (MuJoCo default).
+            ET.SubElement(base_body, "camera", **attrs)
     _mj_inertial_box(base_body, motor_mass, motor_size, motor_com)
     _mj_geom_mesh(base_body, "motor_mesh", motor_vis_rgba, contype=motor_mesh_contype, conaffinity=motor_mesh_conaffinity, group="0")
     _mj_geom_box(base_body, motor_size, motor_com, motor_col_rgba, group="1", contype=motor_box_contype, conaffinity=motor_box_conaffinity)
