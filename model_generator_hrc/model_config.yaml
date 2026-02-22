@@ -58,9 +58,12 @@ scenes:
   keyframe:
     # Keyframe name used by training env reset.
     name: home
-    # Optional overrides (otherwise generator fills with zeros):
-    # - joint_qpos: [ ... ]   # length = 2*len(left_leg.motors) + 1
-    # - ctrl:      [ ... ]    # length = 2*len(left_leg.motors) + 1
+    # Joint order (length = 2*len(left_leg.motors) + 1):
+    #   [l_hip_pitch, l_hip_roll, l_hip_thigh, l_hip_calf, l_ankle_pitch, l_ankle_roll,
+    #    r_hip_pitch, r_hip_roll, r_hip_thigh, r_hip_calf, r_ankle_pitch, r_ankle_roll,
+    #    base_to_trunk]
+    joint_qpos: [-0.44, 0.0, 0.0, 0.785, -0.377, 0.0, 0.44, 0.0, 0.0, -0.785, 0.377, 0.0, 0.0]
+    ctrl:      [-0.44, 0.0, 0.0, 0.785, -0.377, 0.0, 0.44, 0.0, 0.0, -0.785, 0.377, 0.0, 0.0]
   flat:
     filename: scene_joystick_flat_terrain_phonebot.xml
     model_name: "phonebot scene"
