@@ -907,7 +907,13 @@ def build_mjcf(cfg: dict, *, motor_mesh_file: str) -> ET.ElementTree:
                 group="0",
             )
         elif ee_type == "cylinder_tip_box":
-            # Visual-only cylinder (no collision) + collision proxy box at tip.
+            # Visual cylinder "bar" + collision proxy box at tip.
+            #
+            # Collision design for MJX stability:
+            # - Tip box: collides with floor and with the other tip box (group 1).
+            # - Bar cylinder: collides ONLY with the other bar (group 2), NOT with
+            #   floor/hfield and NOT with the tip boxes (MuJoCo contype/conaffinity
+            #   uses OR; see NOTE_colision_rule_in_mjcf.md).
             r = float(ee_radius)
             L = float(ee_length)
             assert ee_tip_box_size is not None
@@ -920,17 +926,18 @@ def build_mjcf(cfg: dict, *, motor_mesh_file: str) -> ET.ElementTree:
             tip_dist = tip_dir * 0.5 * L + tip_offset
             tip_pos = (ee_geom[0] + axis_vec[0] * tip_dist, ee_geom[1] + axis_vec[1] * tip_dist, ee_geom[2] + axis_vec[2] * tip_dist)
 
-            # Visual bar (no contact, MJX does not support hfield×cylinder collisions).
+            bar_name = "left_bar" if prefix == "l" else "right_bar"
             ET.SubElement(
                 ee_body,
                 "geom",
+                name=bar_name,
                 type="cylinder",
                 size=f"{r:.6f} {0.5*L:.6f}",
                 pos=fmt_xyz(*ee_geom),
                 quat=fmt_quat_wxyz(gq),
                 rgba=" ".join(str(float(x)) for x in ee_rgba),
-                contype="0",
-                conaffinity="0",
+                contype="2",
+                conaffinity="2",
                 group="0",
             )
 
