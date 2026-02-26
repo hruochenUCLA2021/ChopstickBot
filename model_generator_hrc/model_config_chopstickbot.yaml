@@ -75,6 +75,8 @@ sensors:
   imu_site:
     # Base body site used by IMU-like sensors
     name: imu
+    # Attach IMU site to "base" (`base_motor_link`) or "trunk" (`trunk_link`).
+    attach_to: base
     xyz: [0.0, 0.0, 0.0]
     # rotate base frame around Z by +90deg so site +X faces robot front
     rpy: [0.0, 0.0, 1.5707963267948966]

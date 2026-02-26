@@ -795,6 +795,9 @@ def build_mjcf(cfg: dict, *, motor_mesh_file: str) -> ET.ElementTree:
     imu_site_name = str(imu_site_cfg.get("name", "imu"))
     imu_site_xyz = as_vec3(imu_site_cfg.get("xyz", (0.0, 0.0, 0.0)))
     imu_site_rpy = as_vec3(imu_site_cfg.get("rpy", (0.0, 0.0, math.pi / 2.0)))
+    imu_site_attach_to = str(imu_site_cfg.get("attach_to", "base")).strip().lower()
+    if imu_site_attach_to not in ("base", "trunk"):
+        raise ValueError("sensors.imu_site.attach_to must be 'base' or 'trunk'")
     left_ee_site_name = str(ee_site_cfg.get("left_name", "left_foot"))
     right_ee_site_name = str(ee_site_cfg.get("right_name", "right_foot"))
     trunk_mass = float(trunk_c["mass_kg"])
@@ -973,9 +976,9 @@ def build_mjcf(cfg: dict, *, motor_mesh_file: str) -> ET.ElementTree:
     if floating_base:
         ET.SubElement(base_body, "freejoint", name="floating_base")
 
-    # IMU site on base body (rotate around Z by +90deg so +X faces robot front)
-    if add_sensors:
-        imu_q = quat_from_R(R_from_rpy(*imu_site_rpy))
+    # IMU site can be attached to base or trunk (still rotated +90deg about Z).
+    imu_q = quat_from_R(R_from_rpy(*imu_site_rpy)) if add_sensors else None
+    if add_sensors and imu_site_attach_to == "base":
         ET.SubElement(base_body, "site", name=imu_site_name, pos=fmt_xyz(*imu_site_xyz), quat=fmt_quat_wxyz(imu_q))
 
     # Optional cameras on base body (e.g., "track" for Mujoco renderer).
@@ -1020,6 +1023,8 @@ def build_mjcf(cfg: dict, *, motor_mesh_file: str) -> ET.ElementTree:
     tR = R_from_rpy(*trpy)
     tq = quat_from_R(tR)
     trunk_body = ET.SubElement(base_body, "body", name="trunk_link", pos=fmt_xyz(*txyz), quat=fmt_quat_wxyz(tq))
+    if add_sensors and imu_site_attach_to == "trunk":
+        ET.SubElement(trunk_body, "site", name=imu_site_name, pos=fmt_xyz(*imu_site_xyz), quat=fmt_quat_wxyz(imu_q))
     tjoint = cfg["trunk"]["joint"]
     ET.SubElement(
         trunk_body,
