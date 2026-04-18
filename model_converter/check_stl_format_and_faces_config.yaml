@@ -1,0 +1,15 @@
+version: 1
+
+# STL(s) to analyze. Can be:
+# - a single file path
+# - a directory (all *.stl / *.STL inside will be scanned)
+stl_paths:
+  - /media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/ChopstickBot/model_converter/out_fred_phonebot_v1/meshes/Body_Link.STL
+  # - /media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/ChopstickBot/model_converter/out_fred_phonebot_v1/meshes
+
+# MuJoCo's common triangle limit for STL import errors you saw.
+max_faces: 200000
+
+# If true, print one-line summary per STL (good for many files).
+compact: false
+

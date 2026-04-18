@@ -1,0 +1,111 @@
+version: 1
+
+# Which method to run. Choose one:
+# - decimation.blender
+# - decimation.meshlab
+# - remesh_simplify.blender
+# - remesh_simplify.meshlab
+# - convex_decomposition.vhacd
+# - convex_decomposition.coacd
+
+# method: remesh_simplify.meshlab
+method: remesh_simplify.blender
+# method: decimation.meshlab
+# method: decimation.blender
+# method: convex_decomposition.vhacd
+# method: convex_decomposition.coacd
+
+io:
+  # Example input folder (you can point this to any mesh folder).
+  input_dir: /media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/ChopstickBot/model_converter/out_fred_phonebot_v2/meshes
+
+  # output_dir: /media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/ChopstickBot/model_converter/out_fred_phonebot_v2_test_decimation_blender/meshes
+  # output_dir: /media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/ChopstickBot/model_converter/out_fred_phonebot_v2_test_decimation_meshlab/meshes
+  # output_dir: /media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/ChopstickBot/model_converter/out_fred_phonebot_v2_test_vhacd/meshes
+  # output_dir: /media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/ChopstickBot/model_converter/out_fred_phonebot_v2_test_coacd/meshes
+  output_dir: /media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/ChopstickBot/model_converter/out_fred_phonebot_v2_test_remesh_simplify_blender/meshes
+
+
+
+
+  # input_dir: /media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/ChopstickBot/model_simplifier/example/meshes_input
+  # input_dir: /media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/ChopstickBot/model_simplifier/example/meshes_input_test_smaller_one  
+
+
+  # output_dir: /media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/ChopstickBot/model_simplifier/example/meshes_output_vhacd
+  # output_dir: /media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/ChopstickBot/model_simplifier/example/meshes_output_coacd
+  # output_dir: /media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/ChopstickBot/model_simplifier/example/meshes_output_decimation_blender
+  # output_dir: /media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/ChopstickBot/model_simplifier/example/meshes_output_decimation_meshlab
+  # output_dir: /media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/ChopstickBot/model_simplifier/example/meshes_output_remesh_simplify_blender
+  # output_dir: /media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/ChopstickBot/model_simplifier/example/meshes_output_remesh_simplify_meshlab
+
+
+  # output_dir: /media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/ChopstickBot/model_simplifier/example/meshes_output_remesh_simplify_meshlab_SMALL_ONE
+  # Extensions to include (case-insensitive).
+  exts: [".stl", ".obj", ".ply"]
+  # If true, preserve subfolder structure under output_dir.
+  preserve_tree: false
+
+common:
+  # If true, overwrite outputs if they already exist.
+  overwrite: true
+
+tools:
+  blender:
+    # If empty/null, uses "blender" from PATH.
+    exe: /media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/ChopstickBot/model_simplifier/toolbox/blender-5.1.1-linux-x64/blender
+  meshlab:
+    # If empty/null, uses "meshlabserver" from PATH.
+    exe: meshlabserver
+  vhacd:
+    # Provide either a CLI executable (preferred) OR leave empty and use pybullet (optional).
+    # If you have a vhacd binary, set it here.
+    exe: "/media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/ChopstickBot/model_simplifier/toolbox/v-hacd_new/v-hacd/app/build/TestVHACD"
+
+decimation:
+  target_faces: 150000
+
+remesh_simplify:
+  # Blender voxel remesh resolution (smaller voxel -> more detail -> more faces).
+  blender_voxel_size: 0.002
+  # After remesh, decimate to target faces.
+  target_faces: 150000
+
+convex_decomposition:
+  vhacd:
+    # Tuning “rough vs precise” (TestVHACD / VHACD):
+    # - More precise (closer to original shape):
+    #   - increase: resolution (-r), max_hulls (-h), max_hull_verts (-v), recursion_depth (-d)
+    #   - decrease: volume_error_percent (-e)
+    # - Rougher (fewer/simpler hulls, faster):
+    #   - decrease: resolution (-r), max_hulls (-h), max_hull_verts (-v)
+    #   - increase: volume_error_percent (-e)
+    #
+    # NOTE: right now our runner passes only:
+    # - resolution -> TestVHACD -r
+    # - max_hulls  -> TestVHACD -h
+    # For all options below:
+    # - if the key is missing or set to null, we DO NOT include that flag in the command
+    #   and TestVHACD uses its internal default.
+    # - if you set a value, it WILL be passed to TestVHACD.
+
+    # Already wired in our runner:
+    resolution: 200000           # TestVHACD -r (default: 100000)
+    max_hulls: 32                # TestVHACD -h (default: 32)
+
+    # Supported by TestVHACD (set a value or null to use default):
+    volume_error_percent: null   # TestVHACD -e (default: 1.0), valid ~0.001..10
+    recursion_depth: null        # TestVHACD -d (default: 10), valid 2..64
+    shrinkwrap: null             # TestVHACD -s (default: true)
+    fill_mode: surface              # TestVHACD -f (default: flood), also: surface, raycast
+    # fill_mode: null              # TestVHACD -f (default: flood), also: surface, raycast
+    max_hull_verts: null         # TestVHACD -v (default: 64)
+    async_acd: null              # TestVHACD -a (default: true)
+    min_edge_length: null        # TestVHACD -l (default: 2)
+    optimal_split_plane: null    # TestVHACD -p (default: false)
+    show_logging: null           # TestVHACD -g (default: true)
+  coacd:
+    # CoACD knobs (python package); interpreted by our script.
+    max_convex_hulls: 32
+    threshold: 0.05
+

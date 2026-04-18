@@ -1,0 +1,2 @@
+"""CoACD convex decomposition."""
+

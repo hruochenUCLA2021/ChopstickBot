@@ -1,0 +1,2 @@
+"""Decimation methods."""
+

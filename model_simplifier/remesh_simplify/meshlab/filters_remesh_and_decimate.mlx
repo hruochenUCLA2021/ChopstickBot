@@ -1,0 +1,49 @@
+<!DOCTYPE FilterScript>
+<FilterScript>
+  <!--
+    MeshLab remesh + decimate preset.
+    This file is treated as a template by `run.py`.
+    The placeholder __TARGET_FACE_NUM__ is replaced at runtime from config.
+  -->
+
+  <!-- Clean -->
+  <filter name="Remove Duplicate Vertices"/>
+  <filter name="Remove Duplicate Faces"/>
+  <filter name="Remove Unreferenced Vertices"/>
+
+  <!-- Remeshing: isotropic explicit remeshing (if available in your MeshLab build). -->
+  <filter name="Remeshing: Isotropic Explicit Remeshing">
+    <!-- Parameter names here must match your MeshLab build (Ubuntu meshlabserver 2020.09). -->
+    <Param type="RichInt" name="Iterations" value="3"/>
+    <Param type="RichBool" name="Adaptive" value="false"/>
+    <Param type="RichBool" name="SelectedOnly" value="false"/>
+    <Param type="RichAbsPerc" name="TargetLen" value="0.0" min="0.0" max="1.0" description="" tooltip=""/>
+    <Param type="RichFloat" name="FeatureDeg" value="30.0"/>
+    <Param type="RichBool" name="CheckSurfDist" value="false"/>
+    <Param type="RichAbsPerc" name="MaxSurfDist" value="0.0" min="0.0" max="1.0" description="" tooltip=""/>
+    <Param type="RichBool" name="SplitFlag" value="true"/>
+    <Param type="RichBool" name="CollapseFlag" value="true"/>
+    <Param type="RichBool" name="SwapFlag" value="true"/>
+    <Param type="RichBool" name="SmoothFlag" value="true"/>
+    <Param type="RichBool" name="ReprojectFlag" value="true"/>
+  </filter>
+
+  <!-- Decimate to face target -->
+  <!-- MeshLabServer 2020.09 uses the "Simplification:" prefix in filter names -->
+  <filter name="Simplification: Quadric Edge Collapse Decimation">
+    <Param type="RichInt" name="TargetFaceNum" value="__TARGET_FACE_NUM__"/>
+    <Param type="RichFloat" name="TargetPerc" value="0"/>
+    <Param type="RichFloat" name="QualityThr" value="0.3"/>
+    <Param type="RichBool" name="PreserveBoundary" value="true"/>
+    <Param type="RichFloat" name="BoundaryWeight" value="1.0"/>
+    <Param type="RichBool" name="PreserveNormal" value="true"/>
+    <Param type="RichBool" name="PreserveTopology" value="true"/>
+    <Param type="RichBool" name="OptimalPlacement" value="true"/>
+    <Param type="RichBool" name="PlanarQuadric" value="false"/>
+    <Param type="RichFloat" name="PlanarWeight" value="0.001"/>
+    <Param type="RichBool" name="QualityWeight" value="false"/>
+    <Param type="RichBool" name="AutoClean" value="true"/>
+    <Param type="RichBool" name="Selected" value="false"/>
+  </filter>
+</FilterScript>
+

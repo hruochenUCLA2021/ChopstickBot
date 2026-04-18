@@ -7,21 +7,34 @@ version: 1
 # MuJoCo can't resolve `package://...`, so we preprocess the URDF to rewrite those
 # to filesystem-relative paths (e.g. ../meshes/base_link.STL) before conversion.
 
-input_urdf: /media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/reference/phonebot_model/3/urdf/3.urdf
+# New URDF (fred_phonebot_model_v1)
+input_urdf: /media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/reference/fred_phonebot_model_v1/new/Phonebot_URDF_v1/urdf/Phonebot_URDF_v2.urdf
+# input_urdf: /media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/reference/fred_phonebot_model_v1/old/Phonebot_URDF_v1/urdf/test5.urdf
+
+# Old URDF (repo phonebot_model)
+# input_urdf: /media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/reference/phonebot_model/3/urdf/3.urdf
 
 output:
   # Directory where outputs will be written.
-  out_dir: /media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/ChopstickBot/model_converter/out
+  out_dir: /media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/ChopstickBot/model_converter/out_fred_phonebot_v2
+  # out_dir: /media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/ChopstickBot/model_converter/out
   # Output MJCF filename
-  mjcf_name: phonebot3.xml
+  mjcf_name: phonebot_v2.xml
+  # mjcf_name: phonebot3.xml
   # Also write the preprocessed URDF for debugging
-  resolved_urdf_name: phonebot3_resolved.urdf
+  resolved_urdf_name: phonebot_v2_resolved.urdf
+  # resolved_urdf_name: phonebot3_resolved.urdf
   # Optional: write a URDF that points to the locally-copied meshes (out/meshes)
-  local_urdf_name: phonebot3_local.urdf
+  local_urdf_name: phonebot_v2_local.urdf
+  # local_urdf_name: phonebot3_local.urdf
 
 package_map:
   # Map ROS package name -> package root directory on disk
-  "3": /media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/reference/phonebot_model/3
+  "Phonebot_URDF_v2": /media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/reference/fred_phonebot_model_v1/new/Phonebot_URDF_v1
+  # "test5": /media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/reference/fred_phonebot_model_v1/old/Phonebot_URDF_v1
+
+  # Old mapping (for reference/phonebot_model/3 URDF)
+  # "3": /media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/reference/phonebot_model/3
 
 convert:
   # If true, urdf2mjcf copies mesh assets into <out_dir>/meshes/

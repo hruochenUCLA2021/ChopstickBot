@@ -1,0 +1,28 @@
+version: 1
+
+# STL(s) to inspect. Each entry can be:
+# - a file path
+# - a directory (all *.stl / *.STL inside will be scanned recursively)
+stl_paths:
+  - /media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/ChopstickBot/model_simplifier/example/meshes_output
+  # - /media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/ChopstickBot/model_simplifier/example/meshes_input
+
+inspect:
+  # Print a detailed block per mesh (if false, prints a compact one-liner).
+  verbose: true
+  # If set, only inspect first N meshes (useful for quick checks).
+  max_files: 0   # 0 means "no limit"
+
+render:
+  # Render PNG previews (uses matplotlib; can be slow for large meshes).
+  enabled: true
+  out_dir: /media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/ChopstickBot/model_simplifier/example/mesh_previews
+  # Maximum faces to plot (meshes larger than this will be face-sampled for preview only).
+  max_plot_faces: 50000
+  # Image size in pixels.
+  width: 900
+  height: 700
+  # Camera angle.
+  elev: 20
+  azim: 35
+

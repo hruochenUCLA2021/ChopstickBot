@@ -28,13 +28,15 @@ options:
   joint_passive:
     enable: true
     default:
+      stiffness: 0.0
       damping: 0.01
       frictionloss: 0.01
       armature: 0.02
     # Optional: per-motor overrides (one dict per left_leg.motors entry)
     # leg:
-    #   - {damping: 0.01, frictionloss: 0.01, armature: 0.02}
+    #   - {stiffness: 0.0, damping: 0.01, frictionloss: 0.01, armature: 0.02}
     # trunk:
+    #   stiffness: 0.0
     #   damping: 0.01
     #   frictionloss: 0.01
     #   armature: 0.02

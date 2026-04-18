@@ -1,0 +1,2 @@
+"""Convex decomposition methods."""
+

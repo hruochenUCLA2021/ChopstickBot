@@ -1,0 +1,2 @@
+"""Blender-based decimation."""
+

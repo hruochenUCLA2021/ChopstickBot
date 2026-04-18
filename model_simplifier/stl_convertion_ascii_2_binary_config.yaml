@@ -1,0 +1,29 @@
+version: 1
+
+# Convert STL files to binary STL.
+#
+# Typical use:
+# - input_dir:  .../example/meshes_output
+# - in_place:   true   (overwrite ASCII STLs with binary STLs)
+#
+# Notes:
+# - VHACD TestVHACD commonly writes ASCII STL (starts with "solid ...").
+# - MuJoCo often prefers/needs binary STL.
+
+io:
+  input_dir: /media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/ChopstickBot/model_simplifier/example/meshes_output
+  # If in_place=false, outputs will be written here (folder will be created).
+  output_dir: /media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/ChopstickBot/model_simplifier/example/meshes_output_binary
+  # If true, overwrite the original STL files (recommended).
+  in_place: false
+  # in_place: true
+  
+  # If true, scan input_dir recursively.
+  recursive: true
+  # Overwrite outputs if they exist.
+  overwrite: true
+
+convert:
+  # If true, skip files that are already binary STL.
+  skip_if_binary: true
+

@@ -1,0 +1,30 @@
+<!DOCTYPE FilterScript>
+<FilterScript>
+  <!--
+    MeshLab decimation preset.
+    NOTE: MeshLab filter params are somewhat version-dependent; this preset uses the common
+    "Quadric Edge Collapse Decimation" filter.
+
+    This file is treated as a template by `run.py`.
+    The placeholder __TARGET_FACE_NUM__ is replaced at runtime from config.
+  -->
+
+  <!-- MeshLabServer 2020.09 uses the "Simplification:" prefix in filter names -->
+  <filter name="Simplification: Quadric Edge Collapse Decimation">
+    <!-- target number of faces -->
+    <Param type="RichInt" name="TargetFaceNum" value="__TARGET_FACE_NUM__"/>
+    <Param type="RichFloat" name="TargetPerc" value="0"/>
+    <Param type="RichFloat" name="QualityThr" value="0.3"/>
+    <Param type="RichBool" name="PreserveBoundary" value="true"/>
+    <Param type="RichFloat" name="BoundaryWeight" value="1.0"/>
+    <Param type="RichBool" name="PreserveNormal" value="true"/>
+    <Param type="RichBool" name="PreserveTopology" value="true"/>
+    <Param type="RichBool" name="OptimalPlacement" value="true"/>
+    <Param type="RichBool" name="PlanarQuadric" value="false"/>
+    <Param type="RichFloat" name="PlanarWeight" value="0.001"/>
+    <Param type="RichBool" name="QualityWeight" value="false"/>
+    <Param type="RichBool" name="AutoClean" value="true"/>
+    <Param type="RichBool" name="Selected" value="false"/>
+  </filter>
+</FilterScript>
+

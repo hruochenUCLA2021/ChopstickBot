@@ -90,6 +90,7 @@ def _joint_passive_cfg(cfg: dict) -> dict:
     out = {
         "enable": enable,
         "default": {
+            "stiffness": float(default.get("stiffness", 0.0)),
             "damping": float(default.get("damping", 0.01)),
             "frictionloss": float(default.get("frictionloss", 0.01)),
             "armature": float(default.get("armature", 0.02)),
@@ -115,9 +116,10 @@ def _joint_passive_attrs_for_leg(cfg: dict, *, motor_index: int, motor_cfg: dict
         per = jp_cfg["default"]
 
     if not isinstance(per, dict):
-        raise ValueError("joint_passive entries must be dicts with damping/frictionloss/armature")
+        raise ValueError("joint_passive entries must be dicts with stiffness/damping/frictionloss/armature")
 
     return {
+        "stiffness": f"{float(per.get('stiffness', jp_cfg['default']['stiffness'])):g}",
         "damping": f"{float(per.get('damping', jp_cfg['default']['damping'])):g}",
         "frictionloss": f"{float(per.get('frictionloss', jp_cfg['default']['frictionloss'])):g}",
         "armature": f"{float(per.get('armature', jp_cfg['default']['armature'])):g}",
@@ -132,8 +134,9 @@ def _joint_passive_attrs_for_trunk(cfg: dict) -> dict[str, str]:
     if per is None:
         per = jp_cfg["default"]
     if not isinstance(per, dict):
-        raise ValueError("joint_passive.trunk must be a dict with damping/frictionloss/armature")
+        raise ValueError("joint_passive.trunk must be a dict with stiffness/damping/frictionloss/armature")
     return {
+        "stiffness": f"{float(per.get('stiffness', jp_cfg['default']['stiffness'])):g}",
         "damping": f"{float(per.get('damping', jp_cfg['default']['damping'])):g}",
         "frictionloss": f"{float(per.get('frictionloss', jp_cfg['default']['frictionloss'])):g}",
         "armature": f"{float(per.get('armature', jp_cfg['default']['armature'])):g}",
