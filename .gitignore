@@ -194,3 +194,9 @@ model_modification/mjcf/robot_realtime_state_saved_in_simulate/*
 **/trash/
 
 **/trash_files/*
+
+# model_simplifier toolbox binaries (keep out of git/GitHub), this one is too large for github 
+model_simplifier/toolbox/blender-5.1.1-linux-x64.tar.xz
+model_simplifier/toolbox/blender-5.1.1-linux-x64/
+model_simplifier/toolbox/MeshLab2025.07-linux_x86_64.AppImage
+model_simplifier/toolbox/MeshLab2025.07-linux_aarch64.AppImage

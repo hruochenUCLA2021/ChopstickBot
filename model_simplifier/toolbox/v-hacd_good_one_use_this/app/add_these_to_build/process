@@ -1,0 +1,26 @@
+#!/bin/bash
+
+if [ -d objects ]; then
+    rm -rf objects
+fi
+
+if [ -d outputs ]; then
+    rm -rf outputs
+fi
+mkdir objects outputs
+
+# if it is stl file, change to stl file to obj file first::
+for filename in inputs/*.STL; do
+    python convert_stl_to_obj.py "$filename" -o objects
+done
+
+# use TestVHACD to simplify obj file::
+for filename in objects/*.obj; do
+    ./TestVHACD "$filename" -o stl
+    rm objects/*.stl
+
+    convex_file=$( basename "$filename" .obj ).STL
+    echo "Completed outputs/$convex_file"
+    mv decomp.stl outputs/"$convex_file"
+done
+
