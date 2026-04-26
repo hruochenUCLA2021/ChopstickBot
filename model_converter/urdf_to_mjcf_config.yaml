@@ -8,7 +8,8 @@ version: 1
 # to filesystem-relative paths (e.g. ../meshes/base_link.STL) before conversion.
 
 # New URDF (fred_phonebot_model_v1)
-input_urdf: /media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/reference/fred_phonebot_model_v1/new/Phonebot_URDF_v1/urdf/Phonebot_URDF_v2.urdf
+input_urdf: /media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/reference/fred_phonebot_model_v1/smaller_battery_centered/Phonebot_URDF_v1.1/urdf/Phonebot_URDF_v1.1.urdf
+# input_urdf: /media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/reference/fred_phonebot_model_v1/new/Phonebot_URDF_v1/urdf/Phonebot_URDF_v2.urdf
 # input_urdf: /media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/reference/fred_phonebot_model_v1/old/Phonebot_URDF_v1/urdf/test5.urdf
 
 # Old URDF (repo phonebot_model)
@@ -16,7 +17,8 @@ input_urdf: /media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/reference/
 
 output:
   # Directory where outputs will be written.
-  out_dir: /media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/ChopstickBot/model_converter/out_fred_phonebot_v2
+  out_dir: /media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/ChopstickBot/model_converter/out_fred_phonebot_v2_smaller_battery_centered
+  # out_dir: /media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/ChopstickBot/model_converter/out_fred_phonebot_v2
   # out_dir: /media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/ChopstickBot/model_converter/out
   # Output MJCF filename
   mjcf_name: phonebot_v2.xml
@@ -30,8 +32,9 @@ output:
 
 package_map:
   # Map ROS package name -> package root directory on disk
+  "Phonebot_URDF_v1.1": /media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/reference/fred_phonebot_model_v1/smaller_battery_centered/Phonebot_URDF_v1.1
   "Phonebot_URDF_v2": /media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/reference/fred_phonebot_model_v1/new/Phonebot_URDF_v1
-  # "test5": /media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/reference/fred_phonebot_model_v1/old/Phonebot_URDF_v1
+  "test5": /media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/reference/fred_phonebot_model_v1/old/Phonebot_URDF_v1
 
   # Old mapping (for reference/phonebot_model/3 URDF)
   # "3": /media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/reference/phonebot_model/3

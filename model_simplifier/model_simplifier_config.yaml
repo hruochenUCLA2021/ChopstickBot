@@ -9,21 +9,24 @@ version: 1
 # - convex_decomposition.coacd
 
 # method: remesh_simplify.meshlab
-method: remesh_simplify.blender
+# method: remesh_simplify.blender
 # method: decimation.meshlab
 # method: decimation.blender
 # method: convex_decomposition.vhacd
-# method: convex_decomposition.coacd
+method: convex_decomposition.coacd
 
 io:
   # Example input folder (you can point this to any mesh folder).
-  input_dir: /media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/ChopstickBot/model_converter/out_fred_phonebot_v2/meshes
+  # input_dir: /media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/ChopstickBot/model_converter/out_fred_phonebot_v2/meshes
+  input_dir: /media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/ChopstickBot/model_converter/out_fred_phonebot_v2_smaller_battery_centered/meshes
 
   # output_dir: /media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/ChopstickBot/model_converter/out_fred_phonebot_v2_test_decimation_blender/meshes
   # output_dir: /media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/ChopstickBot/model_converter/out_fred_phonebot_v2_test_decimation_meshlab/meshes
   # output_dir: /media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/ChopstickBot/model_converter/out_fred_phonebot_v2_test_vhacd/meshes
   # output_dir: /media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/ChopstickBot/model_converter/out_fred_phonebot_v2_test_coacd/meshes
-  output_dir: /media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/ChopstickBot/model_converter/out_fred_phonebot_v2_test_remesh_simplify_blender/meshes
+  # output_dir: /media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/ChopstickBot/model_converter/out_fred_phonebot_v2_test_remesh_simplify_blender/meshes
+  
+  output_dir: /media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/ChopstickBot/model_converter/out_fred_phonebot_v2_smaller_battery_centered_test_coacd/meshes
 
 
 
