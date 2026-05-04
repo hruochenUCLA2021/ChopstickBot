@@ -3,7 +3,19 @@ from __future__ import annotations
 from pathlib import Path
 
 
-def decompose_one(in_path: Path, out_path: Path, *, max_hulls: int, threshold: float) -> None:
+def decompose_one(
+    in_path: Path,
+    out_path: Path,
+    *,
+    max_hulls: int,
+    threshold: float,
+    merge: bool | None = None,
+    decimate: bool | None = None,
+    max_ch_vertex: int | None = None,
+    preprocess_resolution: int | None = None,
+    seed: int | None = None,
+    approximate_mode: str | None = None,
+) -> None:
     """
     Decompose a mesh into convex parts using CoACD.
 
@@ -33,21 +45,45 @@ def decompose_one(in_path: Path, out_path: Path, *, max_hulls: int, threshold: f
     # - Some versions expose `coacd.coacd(vertices, faces, ...)`
     # - v1.0.10 exposes `coacd.run_coacd(mesh, ...)`
     parts = None
-    if hasattr(coacd, "coacd"):
+    # Prefer `run_coacd` when available since it supports more knobs across versions.
+    if hasattr(coacd, "run_coacd"):
+        # Build CoACD Mesh wrapper.
+        mesh_in = coacd.Mesh(v, f)  # type: ignore[attr-defined]
+        kwargs: dict = {
+            "threshold": float(threshold),
+            "max_convex_hull": int(max_hulls) if int(max_hulls) > 0 else -1,
+            # Keep current runner behavior unless user explicitly overrides:
+            # - `merge=False` keeps parts separated (useful when exporting .obj/.ply scenes).
+            # - `.stl` export will still concatenate parts into a single mesh file.
+            "merge": False if merge is None else bool(merge),
+        }
+        if decimate is not None:
+            kwargs["decimate"] = bool(decimate)
+        if max_ch_vertex is not None:
+            kwargs["max_ch_vertex"] = int(max_ch_vertex)
+        if preprocess_resolution is not None:
+            kwargs["preprocess_resolution"] = int(preprocess_resolution)
+        if seed is not None:
+            kwargs["seed"] = int(seed)
+        if approximate_mode is not None:
+            kwargs["approximate_mode"] = str(approximate_mode)
+
+        try:
+            parts = coacd.run_coacd(mesh_in, **kwargs)  # type: ignore[attr-defined]
+        except TypeError as e:
+            # Installed CoACD may not support all kwargs; surface a clear message so
+            # the user can remove unsupported knobs or upgrade CoACD.
+            raise TypeError(
+                "CoACD Python binding rejected one of the configured options. "
+                f"kwargs={kwargs}. Original error: {e}"
+            ) from e
+    elif hasattr(coacd, "coacd"):
+        # Older API: limited knobs.
         parts = coacd.coacd(  # type: ignore[attr-defined]
             v,
             f,
             threshold=threshold,
             max_convex_hulls=max_hulls,
-        )
-    elif hasattr(coacd, "run_coacd"):
-        # Build CoACD Mesh wrapper.
-        mesh_in = coacd.Mesh(v, f)  # type: ignore[attr-defined]
-        parts = coacd.run_coacd(  # type: ignore[attr-defined]
-            mesh_in,
-            threshold=float(threshold),
-            max_convex_hull=int(max_hulls) if int(max_hulls) > 0 else -1,
-            merge=False,  # keep parts separated so we can export multiple hulls
         )
     else:
         raise AttributeError(

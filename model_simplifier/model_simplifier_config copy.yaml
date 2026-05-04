@@ -112,54 +112,6 @@ convex_decomposition:
     show_logging: null           # TestVHACD -g (default: true)
   coacd:
     # CoACD knobs (python package); interpreted by our script.
-    #
-    # Quick tuning guide:
-    # - Want fewer / simpler pieces: increase `threshold`, decrease `max_convex_hulls`
-    # - Want fewer triangles in the output mesh: set `decimate: true` and/or reduce `max_ch_vertex`
-    #
-    # IMPORTANT:
-    # - `threshold` must be in [0, 1] for the CoACD build you are using.
-    #
-    # How many convex parts CoACD is allowed to output (upper bound / target).
-    # - 1 means "try to approximate using a single convex part" (very coarse for non-convex shapes)
-    max_convex_hulls: 1
-    # max_convex_hulls: 32
-
-    # Concavity / error tolerance in [0, 1].
-    # - Smaller => more accurate => usually more hulls
-    # - Larger  => rougher/simpler => usually fewer hulls
-    threshold: 1.0
-    # threshold: 0.2
-    # threshold: 0.05
-
-    # Extra knobs (set to null to keep current runner behavior / CoACD defaults):
-    #
-    # If true, CoACD tries to merge hulls (can reduce hull count).
-    # NOTE: our runner default is merge=false so .obj/.ply can export separate parts.
-    merge: null
-
-    # If true, CoACD decimates/simplifies hull geometry (reduces face count).
-    # NOTE: this can look like "no difference" if the hull is already simple
-    # (or if `max_ch_vertex` is already very low). Best sanity check: CoACD's
-    # header printout should say `decimate true`.
-    decimate: true
-    # decimate: null
-
-    # Maximum vertices per convex hull mesh.
-    # Lower => fewer faces (simpler hull geometry), but can lose detail.
-    # Example sweep: 256 -> 128 -> 64
-    # max_ch_vertex: 10 # this one is too simplified, not good 
-    max_ch_vertex: 16
-    # max_ch_vertex: 32
-    # max_ch_vertex: 64
-    # max_ch_vertex: null
-
-    # Preprocess voxel resolution-ish knob used by CoACD (larger => more detail, slower).
-    preprocess_resolution: null
-
-    # RNG seed for determinism / repeatability.
-    seed: null
-
-    # CoACD approximation mode (as supported by your CoACD build), e.g. "ch".
-    approximate_mode: null
+    max_convex_hulls: 32
+    threshold: 0.05
 

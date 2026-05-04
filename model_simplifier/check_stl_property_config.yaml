@@ -1,0 +1,21 @@
+version: 1
+
+# Print mesh complexity stats (STL/OBJ/PLY) for quick inspection.
+# Usage:
+#   python ChopstickBot/model_simplifier/check_stl_property.py
+#   python ChopstickBot/model_simplifier/check_stl_property.py --config path/to/this.yaml
+
+io:
+  # Folder to scan (recursive).
+  # Relative paths are resolved relative to this YAML file.
+  input_dir: /media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/ChopstickBot/model_simplifier/example/sep_output
+
+  # Which file extensions to include (case-insensitive).
+  exts: [".stl", ".obj", ".ply"]
+
+check:
+  # If true, also print the face counts of the largest few connected components.
+  show_component_sizes: true
+  # How many component sizes to print (largest first).
+  component_sizes_topk: 5
+

@@ -19,6 +19,27 @@ def run(cfg: dict, cfg_path: Path) -> None:
     c = (cfg.get("convex_decomposition", {}) or {}).get("coacd", {}) or {}
     max_hulls = int(c.get("max_convex_hulls", 32))
     threshold = float(c.get("threshold", 0.05))
+    # Optional CoACD knobs; if None/null we keep current runner behavior and/or
+    # let CoACD fall back to its internal defaults.
+    merge = c.get("merge", None)
+    decimate = c.get("decimate", None)
+    max_ch_vertex = c.get("max_ch_vertex", None)
+    preprocess_resolution = c.get("preprocess_resolution", None)
+    seed = c.get("seed", None)
+    approximate_mode = c.get("approximate_mode", None)
+
+    if merge is not None:
+        merge = bool(merge)
+    if decimate is not None:
+        decimate = bool(decimate)
+    if max_ch_vertex is not None:
+        max_ch_vertex = int(max_ch_vertex)
+    if preprocess_resolution is not None:
+        preprocess_resolution = int(preprocess_resolution)
+    if seed is not None:
+        seed = int(seed)
+    if approximate_mode is not None:
+        approximate_mode = str(approximate_mode)
 
     if not io.input_dir.exists():
         raise FileNotFoundError(f"input_dir not found: {io.input_dir}")
@@ -40,5 +61,16 @@ def run(cfg: dict, cfg_path: Path) -> None:
             print(f"[SKIP] {dst}")
             continue
         print(f"[RUN] coacd ... {src.name} -> {dst.name}")
-        decompose_one(src, dst, max_hulls=max_hulls, threshold=threshold)
+        decompose_one(
+            src,
+            dst,
+            max_hulls=max_hulls,
+            threshold=threshold,
+            merge=merge,
+            decimate=decimate,
+            max_ch_vertex=max_ch_vertex,
+            preprocess_resolution=preprocess_resolution,
+            seed=seed,
+            approximate_mode=approximate_mode,
+        )
 
