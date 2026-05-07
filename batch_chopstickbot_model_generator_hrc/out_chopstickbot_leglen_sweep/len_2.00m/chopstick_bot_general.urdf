@@ -1,0 +1,278 @@
+<?xml version='1.0' encoding='utf-8'?>
+<robot name="chopstick_bot">
+  <link name="world" />
+  <joint name="world_to_base" type="fixed">
+    <origin xyz="0.000000 0.000000 2.070000" rpy="0.000000 0.000000 0.000000" />
+    <parent link="world" />
+    <child link="base_motor_link" />
+    </joint>
+  <link name="base_motor_link">
+    <visual>
+      <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <mesh filename="meshes/XL-430_new_coordinate_on_axis.STL" scale="0.001000 0.001000 0.001000" />
+        </geometry>
+      <material name="motor_mat">
+        <color rgba="0.89804 0.91765 0.92941 1.0" />
+        </material>
+      </visual>
+    <collision>
+      <origin xyz="0.000000 -0.012000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <box size="0.028500 0.046500 0.034000" />
+        </geometry>
+      </collision>
+    <inertial>
+      <origin xyz="0.000000 -0.012000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <mass value="0.065000" />
+      <inertia ixx="0.000017973854" ixy="0" ixz="0" iyy="0.000010661354" iyz="0" izz="0.000016111875" />
+      </inertial>
+    </link>
+  <link name="l_hip_pitch">
+    <visual>
+      <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <mesh filename="meshes/XL-430_new_coordinate_on_axis.STL" scale="0.001000 0.001000 0.001000" />
+        </geometry>
+      <material name="motor_mat">
+        <color rgba="0.89804 0.91765 0.92941 1.0" />
+        </material>
+      </visual>
+    <collision>
+      <origin xyz="0.000000 -0.012000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <box size="0.028500 0.046500 0.034000" />
+        </geometry>
+      </collision>
+    <inertial>
+      <origin xyz="0.000000 -0.012000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <mass value="0.065000" />
+      <inertia ixx="0.000017973854" ixy="0" ixz="0" iyy="0.000010661354" iyz="0" izz="0.000016111875" />
+      </inertial>
+    </link>
+  <link name="l_hip_pitch_out">
+    <inertial>
+      <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <mass value="0.001000" />
+      <inertia ixx="0.000000016667" ixy="0" ixz="0" iyy="0.000000016667" iyz="0" izz="0.000000016667" />
+      </inertial>
+    </link>
+  <joint name="l_hip_pitch_mount_fixed" type="fixed">
+    <origin xyz="-0.040000 0.000000 0.000000" rpy="0.000000 -1.570796 0.000000" />
+    <parent link="base_motor_link" />
+    <child link="l_hip_pitch" />
+    </joint>
+  <joint name="l_hip_pitch_joint" type="revolute">
+    <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
+    <parent link="l_hip_pitch" />
+    <child link="l_hip_pitch_out" />
+    <axis xyz="0.000000 0.000000 1.000000" />
+    <limit lower="-3.14159" upper="3.14159" effort="5.0" velocity="8.0" />
+    </joint>
+  <link name="l_hip_roll">
+    <visual>
+      <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <mesh filename="meshes/XL-430_new_coordinate_on_axis.STL" scale="0.001000 0.001000 0.001000" />
+        </geometry>
+      <material name="motor_mat">
+        <color rgba="0.89804 0.91765 0.92941 1.0" />
+        </material>
+      </visual>
+    <collision>
+      <origin xyz="0.000000 -0.012000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <box size="0.028500 0.046500 0.034000" />
+        </geometry>
+      </collision>
+    <inertial>
+      <origin xyz="0.000000 -0.012000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <mass value="0.065000" />
+      <inertia ixx="0.000017973854" ixy="0" ixz="0" iyy="0.000010661354" iyz="0" izz="0.000016111875" />
+      </inertial>
+    </link>
+  <link name="l_hip_roll_out">
+    <inertial>
+      <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <mass value="0.001000" />
+      <inertia ixx="0.000000016667" ixy="0" ixz="0" iyy="0.000000016667" iyz="0" izz="0.000000016667" />
+      </inertial>
+    </link>
+  <joint name="l_hip_roll_mount_fixed" type="fixed">
+    <origin xyz="0.000000 0.000000 0.040000" rpy="0.000000 -1.570796 -1.570796" />
+    <parent link="l_hip_pitch_out" />
+    <child link="l_hip_roll" />
+    </joint>
+  <joint name="l_hip_roll_joint" type="revolute">
+    <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
+    <parent link="l_hip_roll" />
+    <child link="l_hip_roll_out" />
+    <axis xyz="0.000000 0.000000 1.000000" />
+    <limit lower="-3.14159" upper="3.14159" effort="5.0" velocity="8.0" />
+    </joint>
+  <link name="l_end_effector">
+    <visual>
+      <origin xyz="0.000000 0.000000 0.000000" rpy="1.570796 0.000000 0.000000" />
+      <geometry>
+        <cylinder radius="0.005000" length="2.000000" />
+        </geometry>
+      <material name="cylinder_mat">
+        <color rgba="0.7 0.7 0.7 1.0" />
+        </material>
+      </visual>
+    <collision>
+      <origin xyz="0.000000 -1.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <box size="0.020000 0.020000 0.020000" />
+        </geometry>
+      </collision>
+    <inertial>
+      <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <mass value="0.078540" />
+      <inertia ixx="0.026180429654" ixy="0" ixz="0" iyy="0.026180429654" iyz="0" izz="0.000000981748" />
+      </inertial>
+    </link>
+  <joint name="l_end_effector_fixed" type="fixed">
+    <origin xyz="0.000000 -1.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
+    <parent link="l_hip_roll_out" />
+    <child link="l_end_effector" />
+    </joint>
+  <link name="r_hip_pitch">
+    <visual>
+      <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <mesh filename="meshes/XL-430_new_coordinate_on_axis.STL" scale="0.001000 0.001000 0.001000" />
+        </geometry>
+      <material name="motor_mat">
+        <color rgba="0.89804 0.91765 0.92941 1.0" />
+        </material>
+      </visual>
+    <collision>
+      <origin xyz="0.000000 -0.012000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <box size="0.028500 0.046500 0.034000" />
+        </geometry>
+      </collision>
+    <inertial>
+      <origin xyz="0.000000 -0.012000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <mass value="0.065000" />
+      <inertia ixx="0.000017973854" ixy="0" ixz="0" iyy="0.000010661354" iyz="0" izz="0.000016111875" />
+      </inertial>
+    </link>
+  <link name="r_hip_pitch_out">
+    <inertial>
+      <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <mass value="0.001000" />
+      <inertia ixx="0.000000016667" ixy="0" ixz="0" iyy="0.000000016667" iyz="0" izz="0.000000016667" />
+      </inertial>
+    </link>
+  <joint name="r_hip_pitch_mount_fixed" type="fixed">
+    <origin xyz="0.040000 0.000000 0.000000" rpy="0.000000 1.570796 -0.000000" />
+    <parent link="base_motor_link" />
+    <child link="r_hip_pitch" />
+    </joint>
+  <joint name="r_hip_pitch_joint" type="revolute">
+    <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
+    <parent link="r_hip_pitch" />
+    <child link="r_hip_pitch_out" />
+    <axis xyz="0.000000 0.000000 1.000000" />
+    <limit lower="-3.14159" upper="3.14159" effort="5.0" velocity="8.0" />
+    </joint>
+  <link name="r_hip_roll">
+    <visual>
+      <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <mesh filename="meshes/XL-430_new_coordinate_on_axis.STL" scale="0.001000 0.001000 0.001000" />
+        </geometry>
+      <material name="motor_mat">
+        <color rgba="0.89804 0.91765 0.92941 1.0" />
+        </material>
+      </visual>
+    <collision>
+      <origin xyz="0.000000 -0.012000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <box size="0.028500 0.046500 0.034000" />
+        </geometry>
+      </collision>
+    <inertial>
+      <origin xyz="0.000000 -0.012000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <mass value="0.065000" />
+      <inertia ixx="0.000017973854" ixy="0" ixz="0" iyy="0.000010661354" iyz="0" izz="0.000016111875" />
+      </inertial>
+    </link>
+  <link name="r_hip_roll_out">
+    <inertial>
+      <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <mass value="0.001000" />
+      <inertia ixx="0.000000016667" ixy="0" ixz="0" iyy="0.000000016667" iyz="0" izz="0.000000016667" />
+      </inertial>
+    </link>
+  <joint name="r_hip_roll_mount_fixed" type="fixed">
+    <origin xyz="-0.000000 0.000000 0.040000" rpy="0.000000 1.570796 1.570796" />
+    <parent link="r_hip_pitch_out" />
+    <child link="r_hip_roll" />
+    </joint>
+  <joint name="r_hip_roll_joint" type="revolute">
+    <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
+    <parent link="r_hip_roll" />
+    <child link="r_hip_roll_out" />
+    <axis xyz="0.000000 0.000000 1.000000" />
+    <limit lower="-3.14159" upper="3.14159" effort="5.0" velocity="8.0" />
+    </joint>
+  <link name="r_end_effector">
+    <visual>
+      <origin xyz="0.000000 0.000000 0.000000" rpy="1.570796 0.000000 0.000000" />
+      <geometry>
+        <cylinder radius="0.005000" length="2.000000" />
+        </geometry>
+      <material name="cylinder_mat">
+        <color rgba="0.7 0.7 0.7 1.0" />
+        </material>
+      </visual>
+    <collision>
+      <origin xyz="0.000000 -1.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <box size="0.020000 0.020000 0.020000" />
+        </geometry>
+      </collision>
+    <inertial>
+      <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <mass value="0.078540" />
+      <inertia ixx="0.026180429654" ixy="0" ixz="0" iyy="0.026180429654" iyz="0" izz="0.000000981748" />
+      </inertial>
+    </link>
+  <joint name="r_end_effector_fixed" type="fixed">
+    <origin xyz="-0.000000 -1.000000 0.000000" rpy="0.000000 -0.000000 0.000000" />
+    <parent link="r_hip_roll_out" />
+    <child link="r_end_effector" />
+    </joint>
+  <link name="trunk_link">
+    <visual>
+      <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <box size="0.050000 0.050000 0.050000" />
+        </geometry>
+      <material name="box_mat">
+        <color rgba="0.7 0.7 0.7 1.0" />
+        </material>
+      </visual>
+    <collision>
+      <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <geometry>
+        <box size="0.050000 0.050000 0.050000" />
+        </geometry>
+      </collision>
+    <inertial>
+      <origin xyz="0.000000 0.000000 0.000000" rpy="0.000000 0.000000 0.000000" />
+      <mass value="0.200000" />
+      <inertia ixx="0.000083333333" ixy="0" ixz="0" iyy="0.000083333333" iyz="0" izz="0.000083333333" />
+      </inertial>
+    </link>
+  <joint name="base_to_trunk" type="revolute">
+    <origin xyz="0.000000 0.000000 0.050000" rpy="0.000000 0.000000 0.000000" />
+    <parent link="base_motor_link" />
+    <child link="trunk_link" />
+    <axis xyz="0.000000 0.000000 1.000000" />
+    <limit lower="-3.14159" upper="3.14159" effort="5.0" velocity="8.0" />
+    </joint>
+  </robot>

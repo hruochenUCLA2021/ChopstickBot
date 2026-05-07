@@ -200,3 +200,6 @@ model_simplifier/toolbox/blender-5.1.1-linux-x64.tar.xz
 model_simplifier/toolbox/blender-5.1.1-linux-x64/
 model_simplifier/toolbox/MeshLab2025.07-linux_x86_64.AppImage
 model_simplifier/toolbox/MeshLab2025.07-linux_aarch64.AppImage
+
+
+!/batch_chopstickbot_model_generator_hrc/out_chopstickbot_leglen_sweep/**

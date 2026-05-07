@@ -1,0 +1,87 @@
+version: 1
+
+# Batch generator for Chopstickbot MJCF/URDF variants.
+# It reuses the existing generator in `ChopstickBot/model_generator_hrc/model_generator.py`
+# by editing a copy of the base YAML config for each variant.
+
+base:
+  # Base config to clone for each variant.
+  # If relative, resolved relative to this YAML.
+  config_path: ../model_generator_hrc/model_config_chopstickbot.yaml
+
+output:
+  # Base directory where variants will be written.
+  # Each length gets its own subfolder, e.g. `len_0p10m/`, `len_0p20m/`, ...
+  out_base_dir: ./out_chopstickbot_leglen_sweep
+  # Subfolder name format. Available keys: {length_m}
+  variant_dir_fmt: "len_{length_m:.2f}m"
+
+assets:
+  # The generated rough-terrain scene references files like `assets/hfield.png`.
+  # Copy `ChopstickBot/model_generator_hrc/assets/` into each variant folder so those
+  # relative paths work when you open/run the generated XMLs standalone.
+  copy_scene_assets: true
+  # Source assets directory to copy (relative to this YAML if not absolute).
+  src_dir: ../model_generator_hrc/assets
+  # Destination folder name under each variant directory.
+  dst_dir_name: assets
+  # If true, overwrite/update the destination if it already exists.
+  overwrite: true
+
+end_effector:
+  # Fixed cylinder radius (meters)
+  radius_m: 0.005
+
+  # Leg/bar length sweep (meters)
+  length_min_m: 0.2
+  length_max_m: 5.0
+  length_step_m: 0.1
+
+  # Assume constant material density and compute mass from volume:
+  #   mass = density * pi * r^2 * length
+  #
+  # Wood (rough): ~0.5 g/cm^3 = 500 kg/m^3
+  density_g_cm3: 0.5
+
+  # Keep the top end of the bar at the hip_roll output by placing the
+  # end-effector body origin at the cylinder center:
+  #
+  # - The generated MJCF uses `components.end_effector.geom_offset_rpy` to rotate the
+  #   cylinder axis Z -> +Y (default in the base YAML).
+  # - With `geom_offset_xyz = [0,0,0]`, the cylinder is centered at the end-effector body origin.
+  # - To keep the *top* of the cylinder at the joint, we set:
+  #     left_leg.end_effector.xyz = [0, -length/2, 0]
+  #
+  auto_set_end_effector_xyz_to_minus_half_length: true
+
+base_pose:
+  # The base pose (options.base_pose.xyz) in the base YAML was tuned for the original bar length.
+  # If you increase bar length without raising the base Z, the bar/tip will start inside the floor.
+  #
+  # When enabled, we adjust base Z for each variant as:
+  #   base_z = base_z_ref + (length - length_ref) + extra_clearance
+  #
+  # If `length_ref_m` or `base_z_ref_m` are null, they are inferred from the base YAML:
+  # - length_ref_m  <- components.end_effector.shape.length
+  # - base_z_ref_m  <- options.base_pose.xyz[2]
+  #
+  auto_set_base_z_from_leg_length: true
+  length_ref_m: null
+  base_z_ref_m: null
+  # Extra clearance to add on top of the length-based base_z.
+  #
+  # You asked for separate clearances because rough terrain (hfield) can have
+  # local peaks that require more initial height than flat terrain.
+  #
+  # The batch generator applies:
+  # - robot MJCF base pose uses `extra_clearance_model_m`
+  # - flat scene keyframe uses `extra_clearance_flat_m`
+  # - rough scene keyframe uses `extra_clearance_rough_m`
+  extra_clearance_model_m: -0.06
+  extra_clearance_flat_m: -0.0
+  extra_clearance_rough_m: -0.0
+
+run:
+  # If true, print what would be generated but do not write files.
+  dry_run: false
+
