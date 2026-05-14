@@ -16,8 +16,11 @@ version: 1
 method: convex_decomposition.coacd
 
 io:
-  input_dir: /media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/ChopstickBot/model_simplifier/example/sep_input
-  output_dir: /media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/ChopstickBot/model_simplifier/example/sep_output
+  # input_dir: /media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/ChopstickBot/model_simplifier/example/sep_input
+  # output_dir: /media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/ChopstickBot/model_simplifier/example/sep_output
+
+  input_dir: /media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/ChopstickBot/model_simplifier/example/fred_new_foot
+  output_dir: /media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/ChopstickBot/model_simplifier/example/fred_new_foot_out
 
   # # Example input folder (you can point this to any mesh folder).
   # # input_dir: /media/hrc/T7_UBUNTU_ONLY/Codesign_ChopstickBot_all_files/ChopstickBot/model_converter/out_fred_phonebot_v2/meshes
